@@ -311,7 +311,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if (!h) return `${m}m`;
     return m ? `${h}h ${m}m` : `${h}h`;
   }
-  function anteFor(bb) { return bb >= 400 ? Math.round(bb / 2) : 0; }
+  function anteFor(bb) { return bb; }
 
   function makePreset(name) {
     const configs = {
@@ -438,7 +438,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     }
   }
   function setStructure(next,startIndex=0) {
-    pause(); structure=next.map(x=>({...x})); ensureLevelNumbers();
+    pause();
+    structure=next.map(x=>{
+      const item={...x};
+      if(item.kind==='level') item.ante=Number(item.bb)||Number(item.ante)||0;
+      return item;
+    });
+    ensureLevelNumbers();
     currentIndex=Math.max(0,Math.min(structure.length-1,startIndex));
     secondsLeft=Number(structure[currentIndex]?.minutes || 10)*60;
     renderEditor(); renderClock();
