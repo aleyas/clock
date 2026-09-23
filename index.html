@@ -211,6 +211,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     deepstack:{count:18,minutes:15,breaks:[6,12],breakMinutes:15}
   };
   let structure=[], currentIndex=0, secondsLeft=600, timerId=null, running=false;
+  let totalChipsInPlay=300000;
 
   const fmt = n => Number(n).toLocaleString('en-US');
   const time = sec => {
@@ -249,7 +250,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   function render(){
     const players=Math.max(2,Number(playersInput.value)||30);
     const stack=Math.max(100,Number(stackInput.value)||10000);
-    const avgStack=stack;
+    const avgStack=players>0 ? totalChipsInPlay/players : stack;
     const item=structure[currentIndex]||{kind:'level',level:1,sb:25,bb:50,ante:0,minutes:10};
     $('levelNumber').textContent=item.kind==='break'?'Break':'Level '+item.level;
     $('blindText').textContent=item.kind==='break'?'Take a break':fmt(item.sb)+' / '+fmt(item.bb)+' / '+fmt(item.ante||0);
@@ -324,13 +325,34 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('levelTime').addEventListener('input',()=>updateSummary());
   [playersInput,stackInput].forEach(el=>el.addEventListener('input',()=>{updateSummary();render();}));
   function changePlayers(delta){
-    const value=Math.min(1000,Math.max(2,(Number(playersInput.value)||30)+delta));
-    playersInput.value=value;
+    const currentPlayers=Math.max(2,Number(playersInput.value)||30);
+    const nextPlayers=Math.min(1000,Math.max(2,currentPlayers+delta));
+    if(nextPlayers===currentPlayers) return;
+    // Minus = player eliminated: chips remain in play.
+    // Plus = new player enters: add one starting stack to the chip pool.
+    if(delta>0){
+      totalChipsInPlay += Math.max(100,Number(stackInput.value)||10000);
+    }
+    playersInput.value=nextPlayers;
     updateSummary(); render();
   }
   $('playersMinus').addEventListener('click',()=>changePlayers(-1));
   $('playersPlus').addEventListener('click',()=>changePlayers(1));
 
+  playersInput.addEventListener('change',()=>{
+    const players=Math.min(1000,Math.max(2,Number(playersInput.value)||30));
+    playersInput.value=players;
+    totalChipsInPlay=players*Math.max(100,Number(stackInput.value)||10000);
+    updateSummary(); render();
+  });
+  stackInput.addEventListener('change',()=>{
+    const stack=Math.max(100,Number(stackInput.value)||10000);
+    stackInput.value=stack;
+    totalChipsInPlay=Math.max(2,Number(playersInput.value)||30)*stack;
+    updateSummary(); render();
+  });
+
+  totalChipsInPlay=Math.max(2,Number(playersInput.value)||30)*Math.max(100,Number(stackInput.value)||10000);
   setStructure(makeStructure('standard'),1);
 })();
 </script>
