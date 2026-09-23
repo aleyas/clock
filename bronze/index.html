@@ -37,8 +37,6 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
 .blinds{font-size:clamp(30px,4.8vw,50px);font-weight:850;letter-spacing:-.045em}
-.ante-value{font-size:clamp(28px,4vw,48px);font-weight:850;letter-spacing:-.04em}
-.metric-caption{display:flex;gap:28px;color:#8e9aa8;font-size:10px;font-weight:900;letter-spacing:.09em;margin-top:4px}
 .status{font-size:12px;border:1px solid #3a4551;border-radius:999px;padding:5px 9px;color:#cbd3db}
 .timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(68px,11vw,124px);font-weight:850;line-height:1;margin:38px 0 26px}
 .next{display:grid;grid-template-columns:auto 1fr auto;gap:10px 12px;align-items:center;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
@@ -115,10 +113,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div>
                 <div class="level-line">
                   <span id="levelNumber" class="level-number">Level 1</span>
-                  <span id="blindText" class="blinds">25 / 50</span>
-                  <span id="anteText" class="ante-value">0</span>
+                  <span id="blindText" class="blinds">25 / 50 / 50</span>
                 </div>
-                <div class="metric-caption"><span>BLINDS</span><span>ANTE</span></div>
               </div>
               <div id="statusText" class="status">Ready</div>
             </div>
@@ -126,8 +122,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div id="timerText" class="timer">10:00</div>
               <div class="next">
                 <span>Next level</span>
-                <strong id="nextText">50 / 100</strong>
-                <span class="muted" id="nextAnteLabel">Ante 0</span>
+                <strong id="nextText">50 / 100 / 100</strong>
               </div>
               <div class="tournament-stats">
                 <span>Players</span><strong id="playersDisplay">30</strong>
@@ -393,18 +388,15 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
     $('levelNumber').textContent = isBreak ? 'Break' : `Level ${item.level}`;
-    $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)}`;
-    $('anteText').textContent = isBreak ? '—' : formatNumber(item.ante || 0);
+    $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)} / ${formatNumber(item.ante || 0)}`;
     $('timerText').textContent = formatTime(secondsLeft);
     $('statusText').textContent = running ? 'Running' : secondsLeft === 0 ? 'Finished' : 'Ready';
     $('clockTournamentName').textContent = $('tournamentName').value || 'Untitled tournament';
     const n = nextPlayableIndex(currentIndex);
     if (isBreak) {
-      $('nextText').textContent = 'Next level';
-      $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
+      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
     } else {
-      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)}` : 'Tournament end';
-      $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
+      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
     }
     $('playersDisplay').textContent=formatNumber(players);
     $('avgStackDisplay').textContent=formatNumber(avgStack);
