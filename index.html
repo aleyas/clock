@@ -48,6 +48,10 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 label{font-size:12px;font-weight:850;color:var(--muted)}
 input,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 11px;color:var(--text);outline:none}
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-2)}
+.player-stepper{display:grid;grid-template-columns:40px 1fr 40px;gap:6px;align-items:center}
+.player-stepper input{text-align:center;font-weight:800}
+.player-stepper button{height:42px;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;font-size:20px;font-weight:800;line-height:1}
+.player-stepper button:hover{background:#f7f8fa}
 .help{font-size:12px;color:var(--muted);line-height:1.45}
 .notice{border:1px solid #d6e9e0;background:var(--accent-2);color:#285b4d;padding:11px 12px;border-radius:11px;font-size:12px;line-height:1.45}
 .structure-list{display:flex;flex-direction:column;gap:7px;max-height:515px;overflow:auto;margin-top:14px}
@@ -122,7 +126,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
         <div class="field-grid" style="margin-top:15px">
           <div class="field">
             <label for="playersInput">Players</label>
-            <input id="playersInput" type="number" min="2" max="1000" value="30">
+            <div class="player-stepper">
+              <button type="button" id="playersMinus" aria-label="Remove player">−</button>
+              <input id="playersInput" type="number" min="2" max="1000" value="30">
+              <button type="button" id="playersPlus" aria-label="Add player">+</button>
+            </div>
           </div>
           <div class="field">
             <label for="stackInput">Starting stack</label>
@@ -315,6 +323,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('preset').addEventListener('change',()=>{const p=PRESETS[$('preset').value]||PRESETS.standard;$('levelTime').value=p.minutes;});
   $('levelTime').addEventListener('input',()=>updateSummary());
   [playersInput,stackInput].forEach(el=>el.addEventListener('input',()=>{updateSummary();render();}));
+  function changePlayers(delta){
+    const value=Math.min(1000,Math.max(2,(Number(playersInput.value)||30)+delta));
+    playersInput.value=value;
+    updateSummary(); render();
+  }
+  $('playersMinus').addEventListener('click',()=>changePlayers(-1));
+  $('playersPlus').addEventListener('click',()=>changePlayers(1));
 
   setStructure(makeStructure('standard'),1);
 })();
