@@ -31,11 +31,14 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
 .blinds{font-size:clamp(34px,5vw,58px);font-weight:850;letter-spacing:-.05em}
-.ante{font-size:15px;color:#bac4cf;margin-top:8px}
+.ante-value{font-size:clamp(28px,4vw,48px);font-weight:850;letter-spacing:-.04em}
+.metric-caption{display:flex;gap:28px;color:#8e9aa8;font-size:10px;font-weight:900;letter-spacing:.09em;margin-top:4px}
 .status{font-size:12px;border:1px solid #3a4551;border-radius:999px;padding:5px 9px;color:#cbd3db}
 .timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(72px,12vw,132px);font-weight:850;line-height:1;margin:38px 0 28px}
 .next{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:10px 12px;align-items:center;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
 .next strong{color:#fff;font-size:20px}
+.tournament-stats{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:8px 14px;margin-top:14px;padding-top:14px;border-top:1px solid #303944;color:#9faab6;font-size:12px}
+.tournament-stats strong{color:#fff;font-size:17px}
 .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:10px 13px;font-weight:800}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -66,7 +69,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       <div class="brand-mark">♠</div>
       <div>
         <h1>Poker Clock <span class="badge">FREE</span></h1>
-        <div class="subtitle">For your game · no account · no saved tournaments</div>
+        <div class="subtitle" id="subtitle">Players: 30 · Avg. stack: 10,000 · no account · no saved tournaments</div>
       </div>
     </div>
     <div class="actions">
@@ -81,9 +84,10 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
           <div>
             <div class="level-line">
               <span id="levelNumber" class="level-number">Level 1</span>
-              <span id="blindText" class="blinds">25 / 50</span>
+              <span class="blinds" id="blindText">25 / 50</span>
+              <span class="ante-value" id="anteText">0</span>
             </div>
-            <div id="anteText" class="ante">Ante 0</div>
+            <div class="metric-caption"><span>BLINDS</span><span>ANTE</span></div>
           </div>
           <div id="statusText" class="status">Ready</div>
         </div>
@@ -92,8 +96,12 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
           <div class="next">
             <span>Next level</span>
             <strong id="nextText">50 / 100</strong>
-            <span>Ante 0</span>
+            <span>Ante</span>
             <strong id="nextAnte">0</strong>
+          </div>
+          <div class="tournament-stats">
+            <span>Players</span><strong id="playersDisplay">30</strong>
+            <span>Avg. stack</span><strong id="avgStackDisplay">10,000</strong>
           </div>
         </div>
       </div>
@@ -118,6 +126,14 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
         <div class="notice">Open the page, choose your game format and start the clock. The FREE version keeps the experience intentionally simple.</div>
 
         <div class="field-grid" style="margin-top:15px">
+          <div class="field">
+            <label for="playersInput">Players</label>
+            <input id="playersInput" type="number" min="2" max="1000" value="30">
+          </div>
+          <div class="field">
+            <label for="stackInput">Starting stack</label>
+            <input id="stackInput" type="number" min="100" step="100" value="10000">
+          </div>
           <div class="field">
             <label for="levelTime">Level duration (min)</label>
             <input id="levelTime" type="number" min="1" max="120" value="10">
@@ -151,6 +167,14 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 
         <div class="field-grid" style="margin-top:16px">
           <div class="field">
+            <label>Players</label>
+            <input id="playersSummary" value="30" disabled>
+          </div>
+          <div class="field">
+            <label>Average stack</label>
+            <input id="avgStackSummary" value="10,000" disabled>
+          </div>
+          <div class="field">
             <label>Levels</label>
             <input id="levelsDisplay" value="16" disabled>
           </div>
@@ -171,6 +195,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  const playersInput = $('playersInput');
+  const stackInput = $('stackInput');
   const BASE = [
     [25,50],[50,100],[75,150],[100,200],[150,300],[200,400],
     [300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],
@@ -219,15 +245,22 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     renderList(); updateSummary(); render();
   }
   function render(){
+    const players=Math.max(2,Number(playersInput.value)||30);
+    const stack=Math.max(100,Number(stackInput.value)||10000);
+    const avgStack=stack;
     const item=structure[currentIndex]||{kind:'level',level:1,sb:25,bb:50,ante:0,minutes:10};
     $('levelNumber').textContent=item.kind==='break'?'Break':'Level '+item.level;
     $('blindText').textContent=item.kind==='break'?'Take a break':fmt(item.sb)+' / '+fmt(item.bb);
-    $('anteText').textContent=item.kind==='break'?'The break timer is running':'Ante '+fmt(item.ante||0);
+    $('anteText').textContent=item.kind==='break'?'—':fmt(item.ante||0);
     $('timerText').textContent=time(secondsLeft);
     $('statusText').textContent=running?'Running':secondsLeft===0?'Finished':'Ready';
     const n=playable(currentIndex,1);
     $('nextText').textContent=n>=0?fmt(structure[n].sb)+' / '+fmt(structure[n].bb):'Tournament end';
     $('nextAnte').textContent=n>=0?fmt(structure[n].ante||0):'0';
+    $('playersDisplay').textContent=fmt(players);
+    $('avgStackDisplay').textContent=fmt(avgStack);
+    $('playersSummary').value=fmt(players);
+    $('avgStackSummary').value=fmt(avgStack);
   }
   function tick(){
     if(secondsLeft>0){secondsLeft--;render();return;}
@@ -258,6 +291,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const total=structure.reduce((s,x)=>s+Number(x.minutes||0),0);
     $('levelsDisplay').value=levels;
     $('durationDisplay').value=dur(total);
+    if ($('subtitle')) $('subtitle').textContent='Players: '+fmt(Math.max(2,Number(playersInput.value)||30))+' · Avg. stack: '+fmt(Math.max(100,Number(stackInput.value)||10000))+' · no account · no saved tournaments';
   }
   function renderList(){
     const host=$('structureList');host.innerHTML='';
@@ -288,6 +322,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   });
   $('preset').addEventListener('change',()=>{const p=PRESETS[$('preset').value]||PRESETS.standard;$('levelTime').value=p.minutes;});
   $('levelTime').addEventListener('input',()=>updateSummary());
+  [playersInput,stackInput].forEach(el=>el.addEventListener('input',()=>{updateSummary();render();}));
 
   setStructure(makeStructure('standard'),1);
 })();
