@@ -3,87 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Poker Clock — Bronze</title>
+<title>Poker Clock — Free</title>
 <style>
 :root{
   --bg:#f4f5f7; --panel:#fff; --text:#1b222c; --muted:#69727d;
   --line:#e2e6eb; --accent:#1d6f5b; --accent-2:#eaf5f0;
-  --dark:#121820; --dark-2:#202a35; --gold:#9a6b16; --gold-bg:#fbf3dc;
-  --danger:#b64040; --shadow:0 10px 30px rgba(22,30,40,.07);
+  --dark:#121820; --dark-2:#232d38; --gold:#9a6b16; --gold-bg:#fbf3dc;
+  --shadow:0 10px 30px rgba(22,30,40,.07);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
-button{cursor:pointer}
-button:disabled{cursor:not-allowed;opacity:.5}
-.app{max-width:1240px;margin:0 auto;padding:22px}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}
+.app{max-width:1180px;margin:0 auto;padding:22px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand-mark{width:42px;height:42px;border-radius:12px;background:var(--text);color:#fff;display:grid;place-items:center;font-weight:800}
 h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .subtitle{font-size:12px;color:var(--muted);margin-top:3px}
-.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #dfc783;background:var(--gold-bg);color:var(--gold);font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;margin-left:7px}
-.tabs{display:flex;gap:5px;background:#e8ebef;border-radius:12px;padding:4px}
-.tab{border:0;background:transparent;padding:9px 13px;border-radius:9px;color:var(--muted);font-weight:800}
-.tab.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.view{display:none}.view.active{display:block}
-.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
+.badge{display:inline-flex;align-items:center;border:1px solid #dfc783;background:var(--gold-bg);color:var(--gold);font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;margin-left:7px}
+.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
 .panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .panel-head h2{font-size:15px;margin:0}
 .panel-body{padding:19px}
-.clock-card{background:var(--dark);color:#fff;border-radius:18px;padding:26px;min-height:395px;display:flex;flex-direction:column;justify-content:space-between}
+.clock-card{background:var(--dark);color:#fff;border-radius:18px;padding:27px;min-height:470px;display:flex;flex-direction:column;justify-content:space-between}
 .clock-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
-.blinds{font-size:clamp(30px,4.8vw,50px);font-weight:850;letter-spacing:-.045em}
+.blinds{font-size:clamp(34px,5vw,58px);font-weight:850;letter-spacing:-.05em}
 .ante{font-size:15px;color:#bac4cf;margin-top:8px}
 .status{font-size:12px;border:1px solid #3a4551;border-radius:999px;padding:5px 9px;color:#cbd3db}
-.timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(68px,11vw,124px);font-weight:850;line-height:1;margin:38px 0 26px}
-.next{display:grid;grid-template-columns:auto 1fr auto;gap:10px 12px;align-items:center;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
-.next strong{color:#fff;font-size:19px}
-.next .muted{text-align:right}
+.timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(72px,12vw,132px);font-weight:850;line-height:1;margin:38px 0 28px}
+.next{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:10px 12px;align-items:center;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
+.next strong{color:#fff;font-size:20px}
 .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:10px 13px;font-weight:800}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn.dark{background:#252f39;color:#fff;border-color:#252f39}
+.btn.dark{background:var(--dark-2);color:#fff;border-color:var(--dark-2)}
 .btn.small{padding:8px 10px;font-size:12px}
-.btn.danger{color:var(--danger);border-color:#eccaca;background:#fff8f8}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
 label{font-size:12px;font-weight:850;color:var(--muted)}
 input,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 11px;color:var(--text);outline:none}
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-2)}
 .help{font-size:12px;color:var(--muted);line-height:1.45}
 .notice{border:1px solid #d6e9e0;background:var(--accent-2);color:#285b4d;padding:11px 12px;border-radius:11px;font-size:12px;line-height:1.45}
-.section-label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:900;color:var(--muted);margin:17px 0 8px}
-.structure-editor{display:flex;flex-direction:column;gap:7px;max-height:530px;overflow:auto;padding-right:2px}
-.row{display:grid;grid-template-columns:42px 1.05fr .8fr .72fr .65fr auto;gap:7px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:7px 8px;background:#fff}
-.row.break{grid-template-columns:42px 1fr 1fr auto;background:#fff9e9;border-color:#f0d993}
-.row .num{font-size:12px;font-weight:900;color:var(--muted);text-align:center}
-.row input{padding:7px 8px;font-size:12px}
-.row-actions{display:flex;gap:4px;justify-content:flex-end}
-.icon-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 7px;font-size:12px}
-.row-title{font-size:12px;font-weight:850;color:var(--muted)}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.kpi{border:1px solid var(--line);border-radius:12px;padding:11px}
-.kpi span{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
-.kpi strong{display:block;font-size:19px;margin-top:4px}
-.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.saved-card{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff}
-.saved-card h3{margin:0 0 5px;font-size:15px}
-.saved-meta{font-size:12px;color:var(--muted);line-height:1.6}
-.empty{padding:32px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.structure-list{display:flex;flex-direction:column;gap:7px;max-height:515px;overflow:auto;margin-top:14px}
+.level-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:12px}
+.level-row.break{background:#fff9e9;border-color:#f0d993}
+.level-row strong{font-size:13px}
+.muted{color:var(--muted)}
 .footer{margin-top:17px;color:var(--muted);font-size:11px;text-align:center}
-@media (max-width:900px){.grid{grid-template-columns:1fr}.saved-grid{grid-template-columns:1fr}}
-@media (max-width:620px){
-  .app{padding:13px}.topbar{align-items:flex-start;flex-direction:column}.tabs{width:100%}.tab{flex:1}
-  .field-grid{grid-template-columns:1fr}.timer{font-size:72px}
-  .row{grid-template-columns:34px 1fr 1fr 1fr auto}.row .duration-col{display:none}
-  .row.break{grid-template-columns:34px 1fr auto}.next{grid-template-columns:auto 1fr}
-}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.clock-card{min-height:410px}}
+@media(max-width:620px){.app{padding:13px}.topbar{align-items:flex-start;flex-direction:column}.field-grid{grid-template-columns:1fr}.next{grid-template-columns:auto 1fr}.next span:nth-of-type(2),.next strong:nth-of-type(2){display:none}.timer{font-size:76px}.level-row{grid-template-columns:34px 1fr 1fr}}
 </style>
 </head>
 <body>
@@ -92,495 +65,231 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     <div class="brand">
       <div class="brand-mark">♠</div>
       <div>
-        <h1>Poker Clock <span class="badge">BRONZE</span></h1>
-        <div id="subtitle" class="subtitle">2 saved tournaments · local browser storage</div>
+        <h1>Poker Clock <span class="badge">FREE</span></h1>
+        <div class="subtitle">For your game · no account · no saved tournaments</div>
       </div>
     </div>
-    <nav class="tabs" aria-label="Main navigation">
-      <button class="tab active" data-view="clockView">Clock</button>
-      <button class="tab" data-view="setupView">Tournament &amp; structure</button>
-      <button class="tab" data-view="savedView">Saved tournaments</button>
-    </nav>
+    <div class="actions">
+      <button id="fullscreenBtn" class="btn small">Fullscreen</button>
+    </div>
   </header>
 
-  <main>
-    <section id="clockView" class="view active">
-      <div class="grid">
+  <main class="grid">
+    <section>
+      <div class="clock-card" id="clockArea">
+        <div class="clock-top">
+          <div>
+            <div class="level-line">
+              <span id="levelNumber" class="level-number">Level 1</span>
+              <span id="blindText" class="blinds">25 / 50</span>
+            </div>
+            <div id="anteText" class="ante">Ante 0</div>
+          </div>
+          <div id="statusText" class="status">Ready</div>
+        </div>
         <div>
-          <div class="clock-card">
-            <div class="clock-top">
-              <div>
-                <div class="level-line">
-                  <span id="levelNumber" class="level-number">Level 1</span>
-                  <span id="blindText" class="blinds">25 / 50</span>
-                </div>
-                <div id="anteText" class="ante">Ante 0</div>
-              </div>
-              <div id="statusText" class="status">Ready</div>
-            </div>
-            <div>
-              <div id="timerText" class="timer">10:00</div>
-              <div class="next">
-                <span>Next level</span>
-                <strong id="nextText">50 / 100</strong>
-                <span class="muted" id="nextAnteLabel">Ante 0</span>
-              </div>
-            </div>
-          </div>
-          <div class="controls">
-            <button id="startBtn" class="btn primary">Start</button>
-            <button id="pauseBtn" class="btn dark">Pause</button>
-            <button id="resetBtn" class="btn">Reset</button>
-            <button id="prevBtn" class="btn">← Previous</button>
-            <button id="nextBtn" class="btn">Next →</button>
-            <button id="minusBtn" class="btn small">− 30 sec</button>
-            <button id="plusBtn" class="btn small">+ 30 sec</button>
+          <div id="timerText" class="timer">10:00</div>
+          <div class="next">
+            <span>Next level</span>
+            <strong id="nextText">50 / 100</strong>
+            <span>Ante 0</span>
+            <strong id="nextAnte">0</strong>
           </div>
         </div>
+      </div>
 
-        <aside class="panel">
-          <div class="panel-head">
-            <h2 id="clockTournamentName">Standard Home Game</h2>
-            <div class="actions">
-              <button id="saveQuickBtn" class="btn small">Save tournament</button>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="kpis">
-              <div class="kpi"><span>Levels</span><strong id="levelsKpi">16</strong></div>
-              <div class="kpi"><span>Total time</span><strong id="durationKpi">2h 50m</strong></div>
-              <div class="kpi"><span>Stack</span><strong id="stackKpi">10k</strong></div>
-            </div>
-            <div class="section-label">Tournament</div>
-            <div class="field-grid">
-              <div class="field full">
-                <label for="tournamentName">Tournament name</label>
-                <input id="tournamentName" value="Standard Home Game">
-              </div>
-              <div class="field full">
-                <label for="stackInput">Starting stack</label>
-                <input id="stackInput" type="number" min="100" step="100" value="10000">
-              </div>
-            </div>
-            <div class="help" style="margin-top:12px">Bronze saves the complete tournament setup: name, starting stack, blind structure, antes, level times and breaks.</div>
-            <button id="openSetupBtn" class="btn" style="width:100%;margin-top:14px">Edit tournament &amp; blind structure</button>
-          </div>
-        </aside>
+      <div class="controls">
+        <button id="startBtn" class="btn primary">Start</button>
+        <button id="pauseBtn" class="btn dark">Pause</button>
+        <button id="resetBtn" class="btn">Reset</button>
+        <button id="prevBtn" class="btn">← Previous</button>
+        <button id="nextBtn" class="btn">Next →</button>
+        <button id="minusBtn" class="btn small">− 30 sec</button>
+        <button id="plusBtn" class="btn small">+ 30 sec</button>
       </div>
     </section>
 
-    <section id="setupView" class="view">
-      <div class="grid">
-        <div class="panel">
-          <div class="panel-head">
-            <h2>Tournament setup</h2>
-            <div class="actions">
-              <button id="saveSetupBtn" class="btn primary">Save tournament</button>
-            </div>
+    <aside class="panel">
+      <div class="panel-head">
+        <h2>Clock settings</h2>
+        <button id="applyBtn" class="btn small">Apply</button>
+      </div>
+      <div class="panel-body">
+        <div class="notice">Open the page, choose your game format and start the clock. The FREE version keeps the experience intentionally simple.</div>
+
+        <div class="field-grid" style="margin-top:15px">
+          <div class="field">
+            <label for="levelTime">Level duration (min)</label>
+            <input id="levelTime" type="number" min="1" max="120" value="10">
           </div>
-          <div class="panel-body">
-            <div class="notice">The blind structure is now editable level by level. The default structure uses a smoother progression than the old doubling model: 25/50 → 50/100 → 75/150 → 100/200 → 150/300 → 200/400 → 300/600…</div>
-            <div class="field-grid" style="margin-top:15px">
-              <div class="field full">
-                <label for="setupName">Tournament name</label>
-                <input id="setupName" value="Standard Home Game">
-              </div>
-              <div class="field">
-                <label for="setupStack">Starting stack</label>
-                <input id="setupStack" type="number" min="100" step="100" value="10000">
-              </div>
-              <div class="field">
-                <label for="presetSelect">Structure preset</label>
-                <select id="presetSelect">
-                  <option value="standard">Standard Home</option>
-                  <option value="quick">Quick Game</option>
-                  <option value="turbo">Turbo</option>
-                  <option value="deepstack">Deepstack</option>
-                </select>
-              </div>
-            </div>
-            <div class="controls" style="margin-top:12px">
-              <button id="applyPresetBtn" class="btn">Apply preset</button>
-              <button id="addLevelBtn" class="btn">+ Add level</button>
-              <button id="addBreakBtn" class="btn">+ Add break</button>
-            </div>
-            <div class="section-label">Blind structure</div>
-            <div class="structure-editor" id="editor"></div>
+          <div class="field">
+            <label for="breakEvery">Break every (levels)</label>
+            <input id="breakEvery" type="number" min="0" max="20" value="6">
+          </div>
+          <div class="field">
+            <label for="breakTime">Break duration (min)</label>
+            <input id="breakTime" type="number" min="1" max="60" value="10">
+          </div>
+          <div class="field">
+            <label for="startLevel">Start at level</label>
+            <input id="startLevel" type="number" min="1" max="100" value="1">
+          </div>
+          <div class="field full">
+            <label for="preset">Blind structure</label>
+            <select id="preset">
+              <option value="standard">Standard</option>
+              <option value="quick">Quick Game</option>
+              <option value="turbo">Turbo</option>
+              <option value="deepstack">Deepstack</option>
+            </select>
           </div>
         </div>
 
-        <aside class="panel">
-          <div class="panel-head">
-            <h2>Structure summary</h2>
-            <div class="actions">
-              <button id="useInClockBtn" class="btn small">Use in clock</button>
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="kpis">
-              <div class="kpi"><span>Levels</span><strong id="setupLevels">16</strong></div>
-              <div class="kpi"><span>Total time</span><strong id="setupDuration">2h 50m</strong></div>
-              <div class="kpi"><span>Final BB</span><strong id="setupFinalBb">4k</strong></div>
-            </div>
-            <div class="section-label">Structure logic</div>
-            <div class="help">
-              The default Bronze structure uses practical poker-friendly increments rather than multiplying every big blind by two. Breaks are explicit rows, and every level can be edited manually.
-            </div>
-            <div class="notice" style="margin-top:13px">The published NextBlind Quick Game example uses 25/50, 50/100, 100/200 and 200/400 + 200. Our Bronze default keeps that familiar start while adding intermediate levels such as 75/150 and 150/300 for a less abrupt progression.</div>
-          </div>
-        </aside>
-      </div>
-    </section>
+        <div class="controls">
+          <button id="usePresetBtn" class="btn">Use structure</button>
+        </div>
 
-    <section id="savedView" class="view">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>Saved tournaments</h2>
-          <div class="actions">
-            <span id="savedCount" class="subtitle">0 / 2 saved</span>
-            <button id="newTournamentBtn" class="btn small">New tournament</button>
+        <div class="field-grid" style="margin-top:16px">
+          <div class="field">
+            <label>Levels</label>
+            <input id="levelsDisplay" value="16" disabled>
+          </div>
+          <div class="field">
+            <label>Total duration</label>
+            <input id="durationDisplay" value="2h 50m" disabled>
           </div>
         </div>
-        <div class="panel-body">
-          <div id="savedList" class="saved-grid"></div>
-        </div>
+
+        <div class="structure-list" id="structureList"></div>
       </div>
-    </section>
+    </aside>
   </main>
 
-  <div class="footer">Poker and more · Für Dein Spiel · Bronze prototype saves up to 2 tournaments in this browser.</div>
+  <div class="footer">Poker and more · Für Dein Spiel · FREE</div>
 </div>
 
 <script>
 (() => {
-  const $ = (id) => document.getElementById(id);
-  const tabs = document.querySelectorAll('.tab');
-  const views = document.querySelectorAll('.view');
-  const SAVE_KEY = 'pokerClockBronzeTournaments';
-  const MAX_SAVES = 2;
-
-  const BASE_SEQUENCE = [
+  const $ = id => document.getElementById(id);
+  const BASE = [
     [25,50],[50,100],[75,150],[100,200],[150,300],[200,400],
     [300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],
     [1500,3000],[2000,4000],[3000,6000],[4000,8000],[5000,10000],[6000,12000]
   ];
+  const PRESETS = {
+    standard:{count:16,minutes:10,breaks:[6,12],breakMinutes:10},
+    quick:{count:12,minutes:8,breaks:[6],breakMinutes:10},
+    turbo:{count:14,minutes:6,breaks:[7],breakMinutes:5},
+    deepstack:{count:18,minutes:15,breaks:[6,12],breakMinutes:15}
+  };
+  let structure=[], currentIndex=0, secondsLeft=600, timerId=null, running=false;
 
-  let structure = [];
-  let currentIndex = 0;
-  let secondsLeft = 600;
-  let timerId = null;
-  let running = false;
-  let currentSaveId = null;
+  const fmt = n => Number(n).toLocaleString('en-US');
+  const time = sec => {
+    sec=Math.max(0,Math.round(sec));
+    const m=Math.floor(sec/60),s=sec%60;
+    return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  };
+  const dur = mins => {
+    const h=Math.floor(mins/60),m=Math.round(mins%60);
+    return h ? (m ? h+'h '+m+'m' : h+'h') : m+'m';
+  };
+  const ante = bb => bb >= 400 ? Math.round(bb/2) : 0;
 
-  function formatNumber(n) { return Number(n).toLocaleString('en-US'); }
-  function compact(n) {
-    n = Number(n) || 0;
-    if (n >= 1000) return (n % 1000 === 0 ? (n/1000) : (n/1000).toFixed(1).replace('.0','')) + 'k';
-    return String(n);
-  }
-  function formatTime(sec) {
-    sec = Math.max(0, Math.round(sec));
-    const m = Math.floor(sec / 60), s = sec % 60;
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  }
-  function formatDuration(mins) {
-    const h = Math.floor(mins / 60), m = Math.round(mins % 60);
-    if (!h) return `${m}m`;
-    return m ? `${h}h ${m}m` : `${h}h`;
-  }
-  function anteFor(bb) { return bb >= 400 ? Math.round(bb / 2) : 0; }
-
-  function makePreset(name) {
-    const configs = {
-      quick: { count: 12, minutes: 8, breaks: [6], breakMinutes: 10 },
-      standard: { count: 16, minutes: 10, breaks: [6,12], breakMinutes: 10 },
-      turbo: { count: 12, minutes: 6, breaks: [6], breakMinutes: 5 },
-      deepstack: { count: 18, minutes: 15, breaks: [6,12], breakMinutes: 15 }
-    };
-    const cfg = configs[name] || configs.standard;
-    const out = [];
-    for (let i=0; i<cfg.count; i++) {
-      const [sb, bb] = BASE_SEQUENCE[i];
-      out.push({kind:'level', level:i+1, minutes:cfg.minutes, sb, bb, ante:anteFor(bb)});
-      if (cfg.breaks.includes(i+1) && i < cfg.count-1) out.push({kind:'break', minutes:cfg.breakMinutes});
+  function makeStructure(name){
+    const c=PRESETS[name]||PRESETS.standard, out=[];
+    for(let i=0;i<c.count;i++){
+      const [sb,bb]=BASE[i];
+      out.push({kind:'level',level:i+1,minutes:Number($('levelTime').value)||c.minutes,sb,bb,ante:ante(bb)});
+      if(c.breaks.includes(i+1) && i<c.count-1) out.push({kind:'break',minutes:c.breakMinutes});
     }
     return out;
   }
 
-  function ensureLevelNumbers() {
-    let n = 1;
-    structure.forEach(item => { if (item.kind === 'level') item.level = n++; });
+  function playable(from,dir){
+    for(let i=from+dir;i>=0&&i<structure.length;i+=dir) if(structure[i].kind==='level') return i;
+    return -1;
   }
-
-  function renderEditor() {
-    ensureLevelNumbers();
-    const host = $('editor');
-    host.innerHTML = '';
-    structure.forEach((item,index) => {
-      const row = document.createElement('div');
-      if (item.kind === 'break') {
-        row.className = 'row break';
-        row.innerHTML = `
-          <div class="num">—</div>
-          <div><div class="row-title">Break</div><input data-index="${index}" data-field="minutes" type="number" min="1" max="60" value="${item.minutes}" aria-label="Break duration"></div>
-          <div class="row-title">minutes</div>
-          <div class="row-actions">
-            <button class="icon-btn" data-action="up" data-index="${index}">↑</button>
-            <button class="icon-btn" data-action="down" data-index="${index}">↓</button>
-            <button class="icon-btn" data-action="delete" data-index="${index}">×</button>
-          </div>`;
-      } else {
-        row.className = 'row';
-        row.innerHTML = `
-          <div class="num">${item.level}</div>
-          <input data-index="${index}" data-field="sb" type="number" min="1" step="1" value="${item.sb}" aria-label="Small blind">
-          <input data-index="${index}" data-field="bb" type="number" min="2" step="1" value="${item.bb}" aria-label="Big blind">
-          <input data-index="${index}" data-field="ante" type="number" min="0" step="1" value="${item.ante}" aria-label="Ante">
-          <input class="duration-col" data-index="${index}" data-field="minutes" type="number" min="1" max="120" value="${item.minutes}" aria-label="Level duration">
-          <div class="row-actions">
-            <button class="icon-btn" data-action="up" data-index="${index}">↑</button>
-            <button class="icon-btn" data-action="down" data-index="${index}">↓</button>
-            <button class="icon-btn" data-action="delete" data-index="${index}">×</button>
-          </div>`;
-      }
+  function setStructure(next,startLevel=1){
+    pause();
+    structure=next.map(x=>({...x}));
+    const idx=structure.findIndex(x=>x.kind==='level'&&x.level===Number(startLevel));
+    currentIndex=idx>=0?idx:0;
+    secondsLeft=Number(structure[currentIndex]?.minutes||10)*60;
+    renderList(); updateSummary(); render();
+  }
+  function render(){
+    const item=structure[currentIndex]||{kind:'level',level:1,sb:25,bb:50,ante:0,minutes:10};
+    $('levelNumber').textContent=item.kind==='break'?'Break':'Level '+item.level;
+    $('blindText').textContent=item.kind==='break'?'Take a break':fmt(item.sb)+' / '+fmt(item.bb);
+    $('anteText').textContent=item.kind==='break'?'The break timer is running':'Ante '+fmt(item.ante||0);
+    $('timerText').textContent=time(secondsLeft);
+    $('statusText').textContent=running?'Running':secondsLeft===0?'Finished':'Ready';
+    const n=playable(currentIndex,1);
+    $('nextText').textContent=n>=0?fmt(structure[n].sb)+' / '+fmt(structure[n].bb):'Tournament end';
+    $('nextAnte').textContent=n>=0?fmt(structure[n].ante||0):'0';
+  }
+  function tick(){
+    if(secondsLeft>0){secondsLeft--;render();return;}
+    if(currentIndex<structure.length-1){
+      currentIndex++;
+      secondsLeft=Number(structure[currentIndex].minutes||10)*60;
+      render();
+    }else{pause();}
+  }
+  function start(){
+    if(running)return;
+    if(secondsLeft===0){
+      const n=playable(currentIndex,1);
+      if(n>=0){currentIndex=n;secondsLeft=Number(structure[n].minutes||10)*60;}
+    }
+    running=true;clearInterval(timerId);timerId=setInterval(tick,1000);render();
+  }
+  function pause(){running=false;clearInterval(timerId);timerId=null;render();}
+  function reset(){
+    pause();
+    const wanted=Math.max(1,Number($('startLevel').value)||1);
+    const idx=structure.findIndex(x=>x.kind==='level'&&x.level===wanted);
+    currentIndex=idx>=0?idx:0;
+    secondsLeft=Number(structure[currentIndex]?.minutes||10)*60;render();
+  }
+  function updateSummary(){
+    const levels=structure.filter(x=>x.kind==='level').length;
+    const total=structure.reduce((s,x)=>s+Number(x.minutes||0),0);
+    $('levelsDisplay').value=levels;
+    $('durationDisplay').value=dur(total);
+  }
+  function renderList(){
+    const host=$('structureList');host.innerHTML='';
+    structure.forEach(item=>{
+      const row=document.createElement('div');
+      row.className='level-row'+(item.kind==='break'?' break':'');
+      row.innerHTML=item.kind==='break'
+        ? '<div>—</div><div><strong>Break</strong></div><div>'+item.minutes+' min</div><div class="muted">Rest</div>'
+        : '<div><strong>'+item.level+'</strong></div><div><strong>'+fmt(item.sb)+' / '+fmt(item.bb)+'</strong></div><div>Ante '+fmt(item.ante||0)+'</div><div class="muted">'+item.minutes+' min</div>';
       host.appendChild(row);
     });
-    updateSummary();
   }
-
-  function updateSummary() {
-    ensureLevelNumbers();
-    const levels = structure.filter(x => x.kind === 'level');
-    const total = structure.reduce((sum,x) => sum + Number(x.minutes || 0),0);
-    const finalBb = levels.length ? levels[levels.length-1].bb : 0;
-    $('setupLevels').textContent = levels.length;
-    $('setupDuration').textContent = formatDuration(total);
-    $('setupFinalBb').textContent = compact(finalBb);
-    $('levelsKpi').textContent = levels.length;
-    $('durationKpi').textContent = formatDuration(total);
-    $('stackKpi').textContent = compact(Number($('stackInput').value) || 0);
-  }
-
-  function nextPlayableIndex(from) {
-    for (let i=from+1;i<structure.length;i++) if (structure[i].kind === 'level') return i;
-    return -1;
-  }
-  function prevPlayableIndex(from) {
-    for (let i=from-1;i>=0;i--) if (structure[i].kind === 'level') return i;
-    return -1;
-  }
-
-  function renderClock() {
-    ensureLevelNumbers();
-    const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
-    const isBreak = item.kind === 'break';
-    $('levelNumber').textContent = isBreak ? 'Break' : `Level ${item.level}`;
-    $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)}`;
-    $('anteText').textContent = isBreak ? 'The break timer is running' : `Ante ${formatNumber(item.ante || 0)}`;
-    $('timerText').textContent = formatTime(secondsLeft);
-    $('statusText').textContent = running ? 'Running' : secondsLeft === 0 ? 'Finished' : 'Ready';
-    $('clockTournamentName').textContent = $('tournamentName').value || 'Untitled tournament';
-    const n = nextPlayableIndex(currentIndex);
-    if (isBreak) {
-      $('nextText').textContent = 'Next level';
-      $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
-    } else {
-      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)}` : 'Tournament end';
-      $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
-    }
-    $('subtitle').textContent = `${readSaves().length} saved tournaments · local browser storage`;
-  }
-
-  function start() {
-    if (running) return;
-    if (secondsLeft === 0) {
-      const n = currentIndex + 1 < structure.length ? currentIndex + 1 : -1;
-      if (n >= 0) { currentIndex = n; secondsLeft = Number(structure[n].minutes || 10) * 60; }
-    }
-    running = true;
-    clearInterval(timerId);
-    timerId = setInterval(tick,1000);
-    renderClock();
-  }
-  function pause() { running=false; clearInterval(timerId); timerId=null; renderClock(); }
-  function reset() { pause(); currentIndex=0; secondsLeft=Number(structure[0]?.minutes || 10)*60; renderClock(); }
-  function tick() {
-    if (secondsLeft > 0) { secondsLeft--; renderClock(); return; }
-    const next=currentIndex+1;
-    if (next < structure.length) {
-      currentIndex=next; secondsLeft=Number(structure[currentIndex].minutes || 10)*60; renderClock();
-    } else {
-      running=false; clearInterval(timerId); timerId=null; renderClock();
-    }
-  }
-  function setStructure(next,startIndex=0) {
-    pause(); structure=next.map(x=>({...x})); ensureLevelNumbers();
-    currentIndex=Math.max(0,Math.min(structure.length-1,startIndex));
-    secondsLeft=Number(structure[currentIndex]?.minutes || 10)*60;
-    renderEditor(); renderClock();
-  }
-
-  function readSaves() {
-    try { return JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch { return []; }
-  }
-  function writeSaves(items) { localStorage.setItem(SAVE_KEY,JSON.stringify(items)); }
-  function snapshot() {
-    ensureLevelNumbers();
-    return {
-      id: currentSaveId || ('t_' + Date.now()),
-      name: ($('tournamentName').value || 'Untitled tournament').trim(),
-      stack: Number($('stackInput').value) || 0,
-      structure: structure.map(x=>({...x})),
-      updatedAt: new Date().toISOString()
-    };
-  }
-  function saveTournament() {
-    const items=readSaves(), snap=snapshot();
-    const existing=items.findIndex(x=>x.id===snap.id);
-    if (existing>=0) items[existing]=snap;
-    else {
-      if (items.length>=MAX_SAVES) {
-        alert('Bronze allows up to 2 saved tournaments. Delete one saved tournament before creating another.');
-        return;
-      }
-      items.push(snap);
-    }
-    writeSaves(items);
-    currentSaveId=snap.id;
-    $('setupName').value=snap.name; $('setupStack').value=snap.stack;
-    updateSavedView(); renderClock();
-    alert(existing>=0 ? 'Tournament updated.' : 'Tournament saved.');
-  }
-  function loadTournament(item) {
-    currentSaveId=item.id;
-    $('tournamentName').value=item.name; $('setupName').value=item.name;
-    $('stackInput').value=item.stack; $('setupStack').value=item.stack;
-    setStructure(item.structure,0); switchView('clockView');
-  }
-  function newTournament() {
-    currentSaveId=null;
-    $('tournamentName').value='New Tournament'; $('setupName').value='New Tournament';
-    $('stackInput').value=10000; $('setupStack').value=10000; $('presetSelect').value='standard';
-    setStructure(makePreset('standard'),0); switchView('setupView');
-  }
-  function deleteTournament(id) {
-    writeSaves(readSaves().filter(x=>x.id!==id));
-    if (currentSaveId===id) currentSaveId=null;
-    updateSavedView(); renderClock();
-  }
-  function updateSavedView() {
-    const items=readSaves();
-    $('savedCount').textContent=`${items.length} / ${MAX_SAVES} saved`;
-    const host=$('savedList'); host.innerHTML='';
-    if (!items.length) {
-      host.innerHTML='<div class="empty" style="grid-column:1/-1">No saved tournaments yet. Create a structure and click Save tournament.</div>';
-      return;
-    }
-    items.forEach(item=>{
-      const levels=item.structure.filter(x=>x.kind==='level').length;
-      const mins=item.structure.reduce((s,x)=>s+Number(x.minutes||0),0);
-      const card=document.createElement('div'); card.className='saved-card';
-      card.innerHTML=`
-        <h3>${escapeHtml(item.name)}</h3>
-        <div class="saved-meta">Starting stack: <strong>${formatNumber(item.stack)}</strong><br>
-        Levels: <strong>${levels}</strong> · Duration: <strong>${formatDuration(mins)}</strong></div>
-        <div class="controls" style="margin-top:12px">
-          <button class="btn small" data-load="${item.id}">Load</button>
-          <button class="btn small danger" data-delete="${item.id}">Delete</button>
-        </div>`;
-      host.appendChild(card);
-    });
-  }
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  function switchView(viewId) {
-    tabs.forEach(t=>t.classList.toggle('active',t.dataset.view===viewId));
-    views.forEach(v=>v.classList.toggle('active',v.id===viewId));
-  }
-
-  tabs.forEach(tab=>tab.addEventListener('click',()=>switchView(tab.dataset.view)));
-  $('openSetupBtn').addEventListener('click',()=>switchView('setupView'));
-  $('saveQuickBtn').addEventListener('click',saveTournament);
-  $('saveSetupBtn').addEventListener('click',()=>{
-    $('tournamentName').value=$('setupName').value;
-    $('stackInput').value=$('setupStack').value;
-    saveTournament();
-  });
-  $('useInClockBtn').addEventListener('click',()=>{
-    $('tournamentName').value=$('setupName').value;
-    $('stackInput').value=$('setupStack').value;
-    switchView('clockView'); renderClock();
-  });
-  $('newTournamentBtn').addEventListener('click',newTournament);
-  $('applyPresetBtn').addEventListener('click',()=>setStructure(makePreset($('presetSelect').value),0));
-  ['tournamentName','stackInput'].forEach(id=>{
-    $(id).addEventListener('input',()=>{
-      if (id==='tournamentName') $('setupName').value=$('tournamentName').value;
-      if (id==='stackInput') $('setupStack').value=$('stackInput').value;
-      renderClock(); updateSummary();
-    });
-  });
-  ['setupName','setupStack'].forEach(id=>{
-    $(id).addEventListener('input',()=>{
-      if (id==='setupName') $('tournamentName').value=$('setupName').value;
-      if (id==='setupStack') $('stackInput').value=$('setupStack').value;
-      renderClock(); updateSummary();
-    });
-  });
-
-  $('addLevelBtn').addEventListener('click',()=>{
-    const levels=structure.filter(x=>x.kind==='level');
-    const last=levels[levels.length-1] || {bb:50};
-    const bb=Math.max(100,Math.round(last.bb*1.5/50)*50);
-    const sb=Math.max(25,Math.round(bb/2/25)*25);
-    structure.push({kind:'level',level:levels.length+1,minutes:10,sb,bb,ante:anteFor(bb)});
-    renderEditor();
-  });
-  $('addBreakBtn').addEventListener('click',()=>{
-    structure.push({kind:'break',minutes:10}); renderEditor();
-  });
-  $('editor').addEventListener('input',e=>{
-    const idx=Number(e.target.dataset.index), field=e.target.dataset.field;
-    if (!Number.isInteger(idx)||!field||!structure[idx]) return;
-    structure[idx][field]=Math.max(0,Number(e.target.value)||0);
-    updateSummary(); renderClock();
-  });
-  $('editor').addEventListener('click',e=>{
-    const btn=e.target.closest('[data-action]');
-    if (!btn) return;
-    const idx=Number(btn.dataset.index), action=btn.dataset.action;
-    if (!Number.isInteger(idx)||!structure[idx]) return;
-    if (action==='delete') structure.splice(idx,1);
-    if (action==='up'&&idx>0) [structure[idx-1],structure[idx]]=[structure[idx],structure[idx-1]];
-    if (action==='down'&&idx<structure.length-1) [structure[idx+1],structure[idx]]=[structure[idx],structure[idx+1]];
-    if (structure.length===0) structure=makePreset('standard');
-    currentIndex=Math.min(currentIndex,structure.length-1);
-    renderEditor(); renderClock();
-  });
 
   $('startBtn').addEventListener('click',start);
   $('pauseBtn').addEventListener('click',pause);
   $('resetBtn').addEventListener('click',reset);
-  $('nextBtn').addEventListener('click',()=>{
-    pause(); const n=currentIndex+1;
-    if (n<structure.length) { currentIndex=n; secondsLeft=Number(structure[n].minutes||10)*60; renderClock(); }
+  $('nextBtn').addEventListener('click',()=>{pause();const n=currentIndex+1;if(n<structure.length){currentIndex=n;secondsLeft=Number(structure[n].minutes||10)*60;render();}});
+  $('prevBtn').addEventListener('click',()=>{pause();const n=playable(currentIndex,-1);if(n>=0){currentIndex=n;secondsLeft=Number(structure[n].minutes||10)*60;render();}});
+  $('minusBtn').addEventListener('click',()=>{secondsLeft=Math.max(0,secondsLeft-30);render();});
+  $('plusBtn').addEventListener('click',()=>{secondsLeft+=30;render();});
+  $('applyBtn').addEventListener('click',()=>setStructure(makeStructure($('preset').value),Number($('startLevel').value)||1));
+  $('usePresetBtn').addEventListener('click',()=>setStructure(makeStructure($('preset').value),Number($('startLevel').value)||1));
+  $('fullscreenBtn').addEventListener('click',async()=>{
+    try{
+      if(document.fullscreenElement) await document.exitFullscreen();
+      else await $('clockArea').requestFullscreen();
+    }catch(e){}
   });
-  $('prevBtn').addEventListener('click',()=>{
-    pause(); const n=prevPlayableIndex(currentIndex);
-    if (n>=0) { currentIndex=n; secondsLeft=Number(structure[n].minutes||10)*60; renderClock(); }
-  });
-  $('minusBtn').addEventListener('click',()=>{secondsLeft=Math.max(0,secondsLeft-30);renderClock();});
-  $('plusBtn').addEventListener('click',()=>{secondsLeft+=30;renderClock();});
+  $('preset').addEventListener('change',()=>{const p=PRESETS[$('preset').value]||PRESETS.standard;$('levelTime').value=p.minutes;});
+  $('levelTime').addEventListener('input',()=>updateSummary());
 
-  $('savedList').addEventListener('click',e=>{
-    const load=e.target.closest('[data-load]'), del=e.target.closest('[data-delete]');
-    if (load) { const item=readSaves().find(x=>x.id===load.dataset.load); if (item) loadTournament(item); }
-    if (del && confirm('Delete this saved tournament?')) deleteTournament(del.dataset.delete);
-  });
-
-  setStructure(makePreset('standard'),0);
-  updateSavedView();
+  setStructure(makeStructure('standard'),1);
 })();
 </script>
 </body>
