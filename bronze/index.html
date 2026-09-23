@@ -294,6 +294,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   let timerId = null;
   let running = false;
   let currentSaveId = null;
+  let totalChipsInPlay = 300000;
 
   function formatNumber(n) { return Number(n).toLocaleString('en-US'); }
   function compact(n) {
@@ -396,7 +397,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   function renderClock() {
     ensureLevelNumbers();
     const players=Math.max(2,Number($('playersInput').value)||30);
-    const avgStack=Math.max(100,Number($('stackInput').value)||10000);
+    const avgStack=players>0 ? totalChipsInPlay/players : Math.max(100,Number($('stackInput').value)||10000);
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
     $('levelNumber').textContent = isBreak ? 'Break' : `Level ${item.level}`;
@@ -461,6 +462,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       name: ($('tournamentName').value || 'Untitled tournament').trim(),
       players: Number($('playersInput').value) || 30,
       stack: Number($('stackInput').value) || 0,
+      totalChips: Math.round(totalChipsInPlay),
       structure: structure.map(x=>({...x})),
       updatedAt: new Date().toISOString()
     };
@@ -487,13 +489,15 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('tournamentName').value=item.name; $('setupName').value=item.name;
     $('playersInput').value=item.players || 30; $('setupPlayers').value=item.players || 30;
     $('stackInput').value=item.stack; $('setupStack').value=item.stack;
+    totalChipsInPlay=Number(item.totalChips) || (Number(item.players || 30)*Number(item.stack || 10000));
     setStructure(item.structure,0); switchView('clockView');
   }
   function newTournament() {
     currentSaveId=null;
     $('tournamentName').value='New Tournament'; $('setupName').value='New Tournament';
     $('playersInput').value=30; $('setupPlayers').value=30;
-    $('stackInput').value=10000; $('setupStack').value=10000; $('presetSelect').value='standard';
+    $('stackInput').value=10000; $('setupStack').value=10000;
+    totalChipsInPlay=300000; $('presetSelect').value='standard';
     setStructure(makePreset('standard'),0); switchView('setupView');
   }
   function deleteTournament(id) {
@@ -600,9 +604,14 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('pauseBtn').addEventListener('click',pause);
   $('resetBtn').addEventListener('click',reset);
   function changePlayers(delta){
-    const value=Math.min(1000,Math.max(2,(Number($('playersInput').value)||30)+delta));
-    $('playersInput').value=value;
-    $('setupPlayers').value=value;
+    const currentPlayers=Math.max(2,Number($('playersInput').value)||30);
+    const nextPlayers=Math.min(1000,Math.max(2,currentPlayers+delta));
+    if(nextPlayers===currentPlayers) return;
+    if(delta>0){
+      totalChipsInPlay += Math.max(100,Number($('stackInput').value)||10000);
+    }
+    $('playersInput').value=nextPlayers;
+    $('setupPlayers').value=nextPlayers;
     renderClock();
     updateSummary();
   }
@@ -617,6 +626,35 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   }
   $('setupPlayersMinus').addEventListener('click',()=>changeSetupPlayers(-1));
   $('setupPlayersPlus').addEventListener('click',()=>changeSetupPlayers(1));
+
+  $('playersInput').addEventListener('change',()=>{
+    const players=Math.min(1000,Math.max(2,Number($('playersInput').value)||30));
+    $('playersInput').value=players;
+    $('setupPlayers').value=players;
+    totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
+    renderClock(); updateSummary();
+  });
+  $('stackInput').addEventListener('change',()=>{
+    const stack=Math.max(100,Number($('stackInput').value)||10000);
+    $('stackInput').value=stack;
+    $('setupStack').value=stack;
+    totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*stack;
+    renderClock(); updateSummary();
+  });
+  $('setupPlayers').addEventListener('change',()=>{
+    const players=Math.min(1000,Math.max(2,Number($('setupPlayers').value)||30));
+    $('setupPlayers').value=players;
+    $('playersInput').value=players;
+    totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
+    renderClock(); updateSummary();
+  });
+  $('setupStack').addEventListener('change',()=>{
+    const stack=Math.max(100,Number($('setupStack').value)||10000);
+    $('setupStack').value=stack;
+    $('stackInput').value=stack;
+    totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*stack;
+    renderClock(); updateSummary();
+  });
 
   $('nextBtn').addEventListener('click',()=>{
     pause(); const n=currentIndex+1;
@@ -635,6 +673,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if (del && confirm('Delete this saved tournament?')) deleteTournament(del.dataset.delete);
   });
 
+  totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*Math.max(100,Number($('stackInput').value)||10000);
   setStructure(makePreset('standard'),0);
   updateSavedView();
 })();
