@@ -37,12 +37,15 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
 .blinds{font-size:clamp(30px,4.8vw,50px);font-weight:850;letter-spacing:-.045em}
-.ante{font-size:15px;color:#bac4cf;margin-top:8px}
+.ante-value{font-size:clamp(28px,4vw,48px);font-weight:850;letter-spacing:-.04em}
+.metric-caption{display:flex;gap:28px;color:#8e9aa8;font-size:10px;font-weight:900;letter-spacing:.09em;margin-top:4px}
 .status{font-size:12px;border:1px solid #3a4551;border-radius:999px;padding:5px 9px;color:#cbd3db}
 .timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(68px,11vw,124px);font-weight:850;line-height:1;margin:38px 0 26px}
 .next{display:grid;grid-template-columns:auto 1fr auto;gap:10px 12px;align-items:center;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
 .next strong{color:#fff;font-size:19px}
 .next .muted{text-align:right}
+.tournament-stats{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:8px 14px;margin-top:14px;padding-top:14px;border-top:1px solid #303944;color:#9faab6;font-size:12px}
+.tournament-stats strong{color:#fff;font-size:17px}
 .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:10px 13px;font-weight:800}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -113,8 +116,9 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
                 <div class="level-line">
                   <span id="levelNumber" class="level-number">Level 1</span>
                   <span id="blindText" class="blinds">25 / 50</span>
+                  <span id="anteText" class="ante-value">0</span>
                 </div>
-                <div id="anteText" class="ante">Ante 0</div>
+                <div class="metric-caption"><span>BLINDS</span><span>ANTE</span></div>
               </div>
               <div id="statusText" class="status">Ready</div>
             </div>
@@ -124,6 +128,10 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
                 <span>Next level</span>
                 <strong id="nextText">50 / 100</strong>
                 <span class="muted" id="nextAnteLabel">Ante 0</span>
+              </div>
+              <div class="tournament-stats">
+                <span>Players</span><strong id="playersDisplay">30</strong>
+                <span>Avg. stack</span><strong id="avgStackDisplay">10,000</strong>
               </div>
             </div>
           </div>
@@ -157,7 +165,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
                 <label for="tournamentName">Tournament name</label>
                 <input id="tournamentName" value="Standard Home Game">
               </div>
-              <div class="field full">
+              <div class="field">
+                <label for="playersInput">Players</label>
+                <input id="playersInput" type="number" min="2" max="1000" value="30">
+              </div>
+              <div class="field">
                 <label for="stackInput">Starting stack</label>
                 <input id="stackInput" type="number" min="100" step="100" value="10000">
               </div>
@@ -184,6 +196,10 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div class="field full">
                 <label for="setupName">Tournament name</label>
                 <input id="setupName" value="Standard Home Game">
+              </div>
+              <div class="field">
+                <label for="setupPlayers">Players</label>
+                <input id="setupPlayers" type="number" min="2" max="1000" value="30">
               </div>
               <div class="field">
                 <label for="setupStack">Starting stack</label>
@@ -372,11 +388,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 
   function renderClock() {
     ensureLevelNumbers();
+    const players=Math.max(2,Number($('playersInput').value)||30);
+    const avgStack=Math.max(100,Number($('stackInput').value)||10000);
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
     $('levelNumber').textContent = isBreak ? 'Break' : `Level ${item.level}`;
     $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)}`;
-    $('anteText').textContent = isBreak ? 'The break timer is running' : `Ante ${formatNumber(item.ante || 0)}`;
+    $('anteText').textContent = isBreak ? '—' : formatNumber(item.ante || 0);
     $('timerText').textContent = formatTime(secondsLeft);
     $('statusText').textContent = running ? 'Running' : secondsLeft === 0 ? 'Finished' : 'Ready';
     $('clockTournamentName').textContent = $('tournamentName').value || 'Untitled tournament';
@@ -384,11 +402,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if (isBreak) {
       $('nextText').textContent = 'Next level';
       $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
-    } else {
+    }
+    $('playersDisplay').textContent=formatNumber(players);
+    $('avgStackDisplay').textContent=formatNumber(avgStack); else {
       $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)}` : 'Tournament end';
       $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
     }
-    $('subtitle').textContent = `${readSaves().length} saved tournaments · local browser storage`;
+    $('subtitle').textContent = `${players} players · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
   }
 
   function start() {
@@ -429,6 +449,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     return {
       id: currentSaveId || ('t_' + Date.now()),
       name: ($('tournamentName').value || 'Untitled tournament').trim(),
+      players: Number($('playersInput').value) || 30,
       stack: Number($('stackInput').value) || 0,
       structure: structure.map(x=>({...x})),
       updatedAt: new Date().toISOString()
@@ -447,19 +468,21 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     }
     writeSaves(items);
     currentSaveId=snap.id;
-    $('setupName').value=snap.name; $('setupStack').value=snap.stack;
+    $('setupName').value=snap.name; $('setupPlayers').value=snap.players || 30; $('setupStack').value=snap.stack;
     updateSavedView(); renderClock();
     alert(existing>=0 ? 'Tournament updated.' : 'Tournament saved.');
   }
   function loadTournament(item) {
     currentSaveId=item.id;
     $('tournamentName').value=item.name; $('setupName').value=item.name;
+    $('playersInput').value=item.players || 30; $('setupPlayers').value=item.players || 30;
     $('stackInput').value=item.stack; $('setupStack').value=item.stack;
     setStructure(item.structure,0); switchView('clockView');
   }
   function newTournament() {
     currentSaveId=null;
     $('tournamentName').value='New Tournament'; $('setupName').value='New Tournament';
+    $('playersInput').value=30; $('setupPlayers').value=30;
     $('stackInput').value=10000; $('setupStack').value=10000; $('presetSelect').value='standard';
     setStructure(makePreset('standard'),0); switchView('setupView');
   }
@@ -482,8 +505,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       const card=document.createElement('div'); card.className='saved-card';
       card.innerHTML=`
         <h3>${escapeHtml(item.name)}</h3>
-        <div class="saved-meta">Starting stack: <strong>${formatNumber(item.stack)}</strong><br>
-        Levels: <strong>${levels}</strong> · Duration: <strong>${formatDuration(mins)}</strong></div>
+        <div class="saved-meta">Players: <strong>${formatNumber(item.players || 30)}</strong> · Starting stack: <strong>${formatNumber(item.stack)}</strong><br>
+        Avg. stack: <strong>${formatNumber(item.stack)}</strong> · Levels: <strong>${levels}</strong> · Duration: <strong>${formatDuration(mins)}</strong></div>
         <div class="controls" style="margin-top:12px">
           <button class="btn small" data-load="${item.id}">Load</button>
           <button class="btn small danger" data-delete="${item.id}">Delete</button>
@@ -504,26 +527,30 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('saveQuickBtn').addEventListener('click',saveTournament);
   $('saveSetupBtn').addEventListener('click',()=>{
     $('tournamentName').value=$('setupName').value;
+    $('playersInput').value=$('setupPlayers').value;
     $('stackInput').value=$('setupStack').value;
     saveTournament();
   });
   $('useInClockBtn').addEventListener('click',()=>{
     $('tournamentName').value=$('setupName').value;
+    $('playersInput').value=$('setupPlayers').value;
     $('stackInput').value=$('setupStack').value;
     switchView('clockView'); renderClock();
   });
   $('newTournamentBtn').addEventListener('click',newTournament);
   $('applyPresetBtn').addEventListener('click',()=>setStructure(makePreset($('presetSelect').value),0));
-  ['tournamentName','stackInput'].forEach(id=>{
+  ['tournamentName','playersInput','stackInput'].forEach(id=>{
     $(id).addEventListener('input',()=>{
       if (id==='tournamentName') $('setupName').value=$('tournamentName').value;
+      if (id==='playersInput') $('setupPlayers').value=$('playersInput').value;
       if (id==='stackInput') $('setupStack').value=$('stackInput').value;
       renderClock(); updateSummary();
     });
   });
-  ['setupName','setupStack'].forEach(id=>{
+  ['setupName','setupPlayers','setupStack'].forEach(id=>{
     $(id).addEventListener('input',()=>{
       if (id==='setupName') $('tournamentName').value=$('setupName').value;
+      if (id==='setupPlayers') $('playersInput').value=$('setupPlayers').value;
       if (id==='setupStack') $('stackInput').value=$('setupStack').value;
       renderClock(); updateSummary();
     });
