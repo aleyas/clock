@@ -402,12 +402,12 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if (isBreak) {
       $('nextText').textContent = 'Next level';
       $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
-    }
-    $('playersDisplay').textContent=formatNumber(players);
-    $('avgStackDisplay').textContent=formatNumber(avgStack); else {
+    } else {
       $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)}` : 'Tournament end';
       $('nextAnteLabel').textContent = n >= 0 ? `Ante ${formatNumber(structure[n].ante || 0)}` : '';
     }
+    $('playersDisplay').textContent=formatNumber(players);
+    $('avgStackDisplay').textContent=formatNumber(avgStack);
     $('subtitle').textContent = `${players} players · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
   }
 
