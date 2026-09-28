@@ -319,6 +319,9 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
           <div class="panel-body">
             <div class="notice">Sponsor creatives are local to this browser. During a running level or break, the ad overlay can appear at the configured interval and duration while the timer remains visible.</div>
             <div class="field-grid" style="margin-top:15px">
+              <div class="field full"><label for="sponsorName">New sponsor name</label><input id="sponsorName" placeholder="e.g. Poker Shop"></div>
+              <div class="field"><label for="sponsorUrl">Sponsor image URL</label><input id="sponsorUrl" placeholder="https://example.com/ad.jpg"></div>
+              <div class="field"><label for="sponsorFile">Upload sponsor image</label><input id="sponsorFile" type="file" accept="image/*"></div>
               <div class="field"><label for="adInterval">Show every (seconds)</label><input id="adInterval" type="number" min="10" max="3600" value="120"></div>
               <div class="field"><label for="adDuration">Show for (seconds)</label><input id="adDuration" type="number" min="2" max="60" value="8"></div>
               <div class="field"><label><input id="adDuringLevels" type="checkbox" checked style="width:auto;margin-right:7px"> During levels</label></div>
@@ -908,8 +911,15 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('clearBrandBtn').addEventListener('click',()=>{goldBrand={name:'',src:''};$('brandName').value='';$('brandUrl').value='';$('brandFile').value='';renderBrand();});
 
   $('addSponsorBtn').addEventListener('click',()=>{
-    const name=prompt('Sponsor name:','Sponsor '+(goldSponsors.length+1)); if(name===null)return;
-    const url=prompt('Sponsor image URL (optional):',''); addSponsorFromData(name,url||'');
+    const name=$('sponsorName').value.trim() || 'Sponsor '+(goldSponsors.length+1);
+    const url=$('sponsorUrl').value.trim();
+    const file=$('sponsorFile').files?.[0];
+    const finish=src=>{
+      addSponsorFromData(name,src||'');
+      $('sponsorName').value='';$('sponsorUrl').value='';$('sponsorFile').value='';
+    };
+    if(file){const reader=new FileReader();reader.onload=()=>finish(reader.result);reader.readAsDataURL(file);}
+    else finish(url);
   });
   $('sponsorEditor').addEventListener('click',e=>{
     const b=e.target.closest('[data-sponsor-delete]');if(!b)return;
