@@ -137,7 +137,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 <div class="platinum-right"><div class="platinum-stat platinum-level"><span>Level</span><strong id="levelNumber">1</strong></div><div class="platinum-stat"><span>TOTAL TIME</span><strong id="platinumTotalTime">00:00:00</strong></div><div class="platinum-stat"><span>NEXT BREAK</span><strong id="platinumNextBreak">—</strong><em id="platinumBreakDuration"></em></div><div class="platinum-stat"><span>ENTRY</span><strong id="platinumEntry">—</strong></div><div class="platinum-stat"><span>PLAYERS</span><strong id="platinumPlayers">30 / 30</strong></div><div class="platinum-stat"><span>AVG STACK</span><strong id="platinumAvgStack">10,000</strong></div></div>
 <span id="playersDisplay" hidden></span><span id="avgStackDisplay" hidden></span><div class="platinum-powered">powered by Poker and more</div></div>
 <div class="controls platinum-controls"><button id="startBtn" class="btn primary">Start</button><button id="pauseBtn" class="btn dark">Pause</button><button id="resetBtn" class="btn">Reset</button><button id="prevBtn" class="btn">← Previous</button><button id="nextBtn" class="btn">Next →</button><button id="minusBtn" class="btn small">− 30 sec</button><button id="plusBtn" class="btn small">+ 30 sec</button></div>
-<aside class="panel platinum-editor-panel"><div class="panel-head"><h2>Platinum tournament control</h2><div class="actions"><button id="saveQuickBtn" class="btn small">Save tournament</button></div></div><div class="panel-body"><div class="kpis"><div class="kpi"><span>Levels</span><strong id="levelsKpi">16</strong></div><div class="kpi"><span>Total time</span><strong id="durationKpi">2h 50m</strong></div><div class="kpi"><span>Stack</span><strong id="stackKpi">10k</strong></div></div><div class="section-label">Tournament</div><div class="field-grid"><div class="field full"><label for="tournamentName">Tournament name</label><input id="tournamentName" value="Standard Home Game"></div><div class="field"><label for="playersInput">Players</label><div class="player-stepper"><button type="button" id="playersMinus">−</button><input id="playersInput" type="number" min="2" max="1000" value="30"><button type="button" id="playersPlus">+</button></div></div><div class="field"><label for="stackInput">Starting stack</label><input id="stackInput" type="number" min="100" step="100" value="10000"></div></div><div class="help" style="margin-top:12px">Platinum display with tournament control, editable structure, payouts, branding and sponsor media.</div><button id="openSetupBtn" class="btn" style="width:100%;margin-top:14px">Edit tournament &amp; blind structure</button></div></aside>
+<aside class="panel platinum-editor-panel"><div class="panel-head"><h2>Platinum tournament control</h2><div class="actions"><button id="saveQuickBtn" class="btn small">Save tournament</button></div></div><div class="panel-body"><div class="kpis"><div class="kpi"><span>Levels</span><strong id="levelsKpi">16</strong></div><div class="kpi"><span>Total time</span><strong id="durationKpi">2h 50m</strong></div><div class="kpi"><span>Stack</span><strong id="stackKpi">10k</strong></div></div><div class="section-label">Tournament</div><div class="field-grid"><div class="field full"><label for="tournamentName">Tournament name</label><input id="tournamentName" value="Standard Home Game"></div><div class="field"><label for="playersInput">Players</label><div class="player-stepper"><button type="button" id="playersMinus">−</button><input id="playersInput" type="number" min="2" max="1000" value="30"><button type="button" id="playersPlus">+</button></div></div><div class="field"><label for="stackInput">Starting stack</label><input id="stackInput" type="number" min="100" step="100" value="10000"></div><div class="field"><label for="entryFee">Entry fee (€)</label><input id="entryFee" type="number" min="0" step="1" value="600"></div></div><div class="help" style="margin-top:12px">Platinum display with tournament control, editable structure, payouts, branding and sponsor media.</div><button id="openSetupBtn" class="btn" style="width:100%;margin-top:14px">Edit tournament &amp; blind structure</button></div></aside>
 </div></section>
     <section id="setupView" class="view">
       <div class="grid">
@@ -348,7 +348,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   const views = document.querySelectorAll('.view');
   const SAVE_KEY = 'pokerClockPlatinumTournaments';
   const MEDIA_KEY = 'pokerClockPlatinumMedia';
-  const MAX_SAVES = 10;
+  const MAX_SAVES = Infinity;
 
   const BASE_SEQUENCE = [
     [25,50],[50,100],[75,150],[100,200],[150,300],[200,400],
@@ -617,7 +617,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       if(bi>=0){let remain=bi===currentIndex?secondsLeft:structure.slice(currentIndex,bi).reduce((sum,x)=>sum+Number(x.minutes||0)*60,0)-((Number(item.minutes||0)*60)-secondsLeft);$('platinumNextBreak').textContent=formatTime(Math.max(0,remain));$('platinumBreakDuration').textContent='('+Number(structure[bi].minutes||0)+' MIN)';}
       else{$('platinumNextBreak').textContent='—';$('platinumBreakDuration').textContent='';}
     }
-    if($('platinumEntry')) $('platinumEntry').textContent='—';    $('avgStackDisplay').textContent=formatNumber(avgStack);
+    if($('platinumEntry')) $('platinumEntry').textContent='€'+formatNumber(Math.max(0,Number($('entryFee')?.value)||0));    $('avgStackDisplay').textContent=formatNumber(avgStack);
     $('subtitle').textContent = `${players} remaining / ${entries} entries · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
   }
 
@@ -685,14 +685,14 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if (existing>=0) items[existing]=snap;
     else {
       if (items.length>=MAX_SAVES) {
-        alert('Gold allows up to 10 saved tournaments. Delete one saved tournament before creating another.');
+        alert('Platinum allows unlimited saved tournaments.');
         return;
       }
       items.push(snap);
     }
     writeSaves(items);
     currentSaveId=snap.id;
-    $('setupName').value=snap.name; $('setupPlayers').value=snap.players || 30; $('setupStack').value=snap.stack;
+    $('setupName').value=snap.name; $('setupPlayers').value=snap.players || 30; $('setupStack').value=snap.stack; if($('setupEntryFee')) $('setupEntryFee').value=snap.entryFee ?? 0;
     updateSavedView(); renderClock();
     alert(existing>=0 ? 'Tournament updated.' : 'Tournament saved.');
   }
@@ -700,7 +700,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     currentSaveId=item.id;
     $('tournamentName').value=item.name; $('setupName').value=item.name;
     $('playersInput').value=item.players || 30; $('setupPlayers').value=item.players || 30;
-    $('stackInput').value=item.stack; $('setupStack').value=item.stack;
+    $('stackInput').value=item.stack; $('setupStack').value=item.stack; if($('entryFee')) $('entryFee').value=item.entryFee ?? 0; if($('setupEntryFee')) $('setupEntryFee').value=item.entryFee ?? 0;
     totalChipsInPlay=Number(item.totalChips) || (Number(item.players || 30)*Number(item.stack || 10000));
     setStructure(item.structure,0); loadGoldData(item.gold); writeMediaConfig(); switchView('clockView');
   }
@@ -708,7 +708,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     currentSaveId=null;
     $('tournamentName').value='New Tournament'; $('setupName').value='New Tournament';
     $('playersInput').value=30; $('setupPlayers').value=30;
-    $('stackInput').value=10000; $('setupStack').value=10000;
+    $('stackInput').value=10000; $('setupStack').value=10000; $('entryFee').value=600; $('setupEntryFee').value=600;
     totalChipsInPlay=300000; $('presetSelect').value='standard';
     setStructure(makePreset('standard'),0); loadGoldData(null); switchView('setupView');
   }
@@ -719,7 +719,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   }
   function updateSavedView() {
     const items=readSaves();
-    $('savedCount').textContent=`${items.length} / ${MAX_SAVES} saved`;
+    $('savedCount').textContent=`${items.length} saved`;
     const host=$('savedList'); host.innerHTML='';
     if (!items.length) {
       host.innerHTML='<div class="empty" style="grid-column:1/-1">No saved tournaments yet. Create a structure and click Save tournament.</div>';
@@ -833,7 +833,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('setupPlayers').value=value;
     $('playersInput').value=value;
     totalEntries=value;
-    renderClock();
+    if($('entryFee') && $('setupEntryFee')){
+    $('entryFee').addEventListener('input',()=>{ $('setupEntryFee').value=$('entryFee').value; renderClock(); });
+    $('setupEntryFee').addEventListener('input',()=>{ $('entryFee').value=$('setupEntryFee').value; renderClock(); });
+  }
+  renderClock();
     updateSummary();
   }
   $('setupPlayersMinus').addEventListener('click',()=>changeSetupPlayers(-1));
