@@ -900,7 +900,29 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 
   $('payoutEditor').addEventListener('input',e=>{
     const i=Number(e.target.dataset.payoutIndex), f=e.target.dataset.payoutField;
-    if(Number.isInteger(i)&&goldPayouts[i]&&f){ goldPayouts[i][f]=f==='place'?Math.max(1,Number(e.target.value)||1):e.target.value; renderPayouts(); }
+    if(!Number.isInteger(i)||!goldPayouts[i]||!f)return;
+    // Do not rebuild the payout editor while the user is typing. Re-rendering
+    // the row on every keystroke replaces the input element and makes the
+    // first typed digit disappear / moves focus away from the field.
+    if(f==='place'){
+      const value=Number(e.target.value);
+      if(Number.isFinite(value) && value>=1) goldPayouts[i][f]=value;
+      const num=e.target.parentElement?.querySelector('.num');
+      if(num) num.textContent=e.target.value || '—';
+    }else{
+      goldPayouts[i][f]=e.target.value;
+    }
+    renderGoldClockExtras();
+  });
+  $('payoutEditor').addEventListener('change',e=>{
+    const i=Number(e.target.dataset.payoutIndex), f=e.target.dataset.payoutField;
+    if(!Number.isInteger(i)||!goldPayouts[i]||f!=='place')return;
+    const value=Math.max(1,Number(e.target.value)||1);
+    goldPayouts[i].place=value;
+    e.target.value=value;
+    const num=e.target.parentElement?.querySelector('.num');
+    if(num) num.textContent=value;
+    renderGoldClockExtras();
   });
   $('payoutEditor').addEventListener('click',e=>{
     const b=e.target.closest('[data-payout-delete]'); if(!b)return;
