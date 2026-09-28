@@ -33,12 +33,12 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .panel-head h2{font-size:15px;margin:0}
 .panel-body{padding:19px}
 .clock-card{position:relative;overflow:hidden;background:var(--dark);color:#fff;border-radius:18px;padding:26px;min-height:395px;display:flex;flex-direction:column;justify-content:space-between}
-.clock-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.clock-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:relative;z-index:5}.clock-top>div:first-child{width:52%;min-width:0}.clock-top .blinds{font-size:clamp(28px,4.1vw,44px);white-space:nowrap;overflow:hidden}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
 .blinds{font-size:clamp(30px,4.8vw,50px);font-weight:850;letter-spacing:-.045em}
 .status{font-size:12px;border:1px solid #3a4551;border-radius:999px;padding:5px 9px;color:#cbd3db}
-.timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(68px,11vw,124px);font-weight:850;line-height:1;margin:38px 0 26px}
+.timer{font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:clamp(68px,10vw,116px);font-weight:850;line-height:1;margin:38px 0 26px;width:52%;position:relative;z-index:4}
 .next{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;border-top:1px solid #303944;padding-top:17px;color:#b9c3cd;font-size:13px}
 .next strong{color:#fff;font-size:19px;white-space:nowrap}
 .next strong{color:#fff;font-size:19px;white-space:nowrap}
@@ -90,11 +90,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-side-panel{position:absolute;right:18px;top:18px;bottom:72px;width:46%;display:grid;grid-template-rows:72px 1fr;gap:12px;z-index:3}
-.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px}
+.gold-side-panel{position:absolute;right:18px;top:18px;bottom:72px;width:46%;display:grid;grid-template-rows:64px 1fr;gap:12px;z-index:3}
+.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.72);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:8px}
 .gold-brand-box img,.gold-sponsor-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 .gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
-.gold-payout-line{width:48%;margin:0 0 12px 0;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff}
+.gold-payout-line{width:52%;margin:0 0 12px 0;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff;position:relative;z-index:4}
 .gold-payout-marquee{white-space:nowrap;display:inline-block;min-width:max-content;font-size:15px;font-weight:800;animation:goldPayoutScroll 18s linear infinite}
 @keyframes goldPayoutScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .gold-powered{position:absolute;right:18px;bottom:10px;font-size:10px;color:#98a3ae;z-index:4}
