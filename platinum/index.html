@@ -671,6 +671,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       name: ($('tournamentName').value || 'Untitled tournament').trim(),
       players: Number($('playersInput').value) || 30,
       stack: Number($('stackInput').value) || 0,
+      entryFee: Math.max(0, Number($('entryFee')?.value) || 0),
       totalChips: Math.round(totalChipsInPlay),
       structure: structure.map(x=>({...x})),
       updatedAt: new Date().toISOString()
