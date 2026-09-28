@@ -94,11 +94,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
 .gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px}
 .gold-brand-box img,.gold-sponsor-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 .gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
-.gold-payout-line{width:calc(100% - 52%);margin:0 0 14px auto;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff}
+.gold-payout-line{width:48%;margin:0 0 12px 0;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff}
 .gold-payout-marquee{white-space:nowrap;display:inline-block;min-width:max-content;font-size:15px;font-weight:800;animation:goldPayoutScroll 18s linear infinite}
 @keyframes goldPayoutScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .gold-powered{position:absolute;right:18px;bottom:10px;font-size:10px;color:#98a3ae;z-index:4}
-@media (max-width:900px){.gold-side-panel{width:43%}.gold-payout-line{width:54%}.gold-payout-marquee{font-size:13px}}
+@media (max-width:900px){.gold-side-panel{width:43%}.gold-payout-line{width:50%}.gold-payout-marquee{font-size:13px}}
 
 .gold-ad-overlay{position:fixed;inset:0;background:rgba(8,11,15,.94);z-index:9999;display:none;align-items:center;justify-content:center;padding:30px}
 .gold-ad-overlay.show{display:flex}
@@ -417,6 +417,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   const tabs = document.querySelectorAll('.tab');
   const views = document.querySelectorAll('.view');
   const SAVE_KEY = 'pokerClockGoldTournaments';
+  const MEDIA_KEY = 'pokerClockGoldMedia';
   const MAX_SAVES = 10;
 
   const BASE_SEQUENCE = [
@@ -442,6 +443,24 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   let goldBrand = {name:'',src:''};
   let goldSponsors = [];
   let adElapsed = 0;
+
+  function readMediaConfig(){
+    try {
+      const data=JSON.parse(localStorage.getItem(MEDIA_KEY)||'null');
+      if(data){
+        goldBrand=data.brand?{...data.brand}:{name:'',src:''};
+        goldSponsors=Array.isArray(data.sponsors)?data.sponsors.map(x=>({...x})):[];
+      }
+    } catch {}
+  }
+  function writeMediaConfig(){
+    try {
+      localStorage.setItem(MEDIA_KEY,JSON.stringify({
+        brand:{...goldBrand},
+        sponsors:goldSponsors.map(x=>({...x}))
+      }));
+    } catch {}
+  }
 
   function goldData(){
     return {
@@ -505,7 +524,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const powered=document.createElement('div'); powered.className='gold-powered'; powered.textContent='powered by Poker and more'; card.appendChild(powered);
   }
   function addSponsorFromData(name,src){
-    goldSponsors.push({name:name||'Sponsor',src:src||''}); renderSponsors(); renderGoldClockExtras();
+    goldSponsors.push({name:name||'Sponsor',src:src||''}); writeMediaConfig(); renderSponsors(); renderGoldClockExtras();
   }
   function showGoldAd(){
     const eligible = structure[currentIndex]?.kind==='break' ? $('adDuringBreaks').checked : $('adDuringLevels').checked;
@@ -518,7 +537,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');}},1000);
   }
   function loadGoldData(g){
-    if(!g)return;
+    if(!g){
+      readMediaConfig();
+      renderPayouts();renderBrand();renderSponsors();
+      return;
+    }
     goldPayouts=Array.isArray(g.payouts)?g.payouts.map(x=>({...x})):GOLD_DEFAULT_PAYOUTS.map(x=>({...x}));
     goldBrand=g.brand?{...g.brand}:{name:'',src:''};
     goldSponsors=Array.isArray(g.sponsors)?g.sponsors.map(x=>({...x})):[];
@@ -732,7 +755,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('playersInput').value=item.players || 30; $('setupPlayers').value=item.players || 30;
     $('stackInput').value=item.stack; $('setupStack').value=item.stack;
     totalChipsInPlay=Number(item.totalChips) || (Number(item.players || 30)*Number(item.stack || 10000));
-    setStructure(item.structure,0); loadGoldData(item.gold); switchView('clockView');
+    setStructure(item.structure,0); loadGoldData(item.gold); writeMediaConfig(); switchView('clockView');
   }
   function newTournament() {
     currentSaveId=null;
@@ -927,13 +950,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('addPayoutBtn').addEventListener('click',()=>{goldPayouts.push({place:goldPayouts.length+1,prize:''});renderPayouts();});
   $('payoutVisible').addEventListener('change',renderGoldClockExtras);
 
-  $('brandName').addEventListener('input',()=>{goldBrand.name=$('brandName').value;renderBrand();});
-  $('brandUrl').addEventListener('input',()=>{goldBrand.src=$('brandUrl').value.trim();renderBrand();});
+  $('brandName').addEventListener('input',()=>{goldBrand.name=$('brandName').value;writeMediaConfig();renderBrand();});
+  $('brandUrl').addEventListener('input',()=>{goldBrand.src=$('brandUrl').value.trim();writeMediaConfig();renderBrand();});
   $('brandFile').addEventListener('change',e=>{
     const file=e.target.files?.[0]; if(!file)return;
-    const reader=new FileReader(); reader.onload=()=>{goldBrand.src=reader.result;renderBrand();}; reader.readAsDataURL(file);
+    const reader=new FileReader(); reader.onload=()=>{goldBrand.src=reader.result;writeMediaConfig();renderBrand();}; reader.readAsDataURL(file);
   });
-  $('clearBrandBtn').addEventListener('click',()=>{goldBrand={name:'',src:''};$('brandName').value='';$('brandUrl').value='';$('brandFile').value='';renderBrand();});
+  $('clearBrandBtn').addEventListener('click',()=>{goldBrand={name:'',src:''};$('brandName').value='';$('brandUrl').value='';$('brandFile').value='';writeMediaConfig();renderBrand();});
 
   $('addSponsorBtn').addEventListener('click',()=>{
     const name=$('sponsorName').value.trim() || 'Sponsor '+(goldSponsors.length+1);
@@ -948,7 +971,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   });
   $('sponsorEditor').addEventListener('click',e=>{
     const b=e.target.closest('[data-sponsor-delete]');if(!b)return;
-    goldSponsors.splice(Number(b.dataset.sponsorDelete),1);renderSponsors();
+    goldSponsors.splice(Number(b.dataset.sponsorDelete),1);writeMediaConfig();renderSponsors();renderGoldClockExtras();
   });
 
   $('controlStart').addEventListener('click',start);
@@ -978,6 +1001,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   };
   renderPayouts();renderBrand();renderSponsors();
 
+  readMediaConfig();
   totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*Math.max(100,Number($('stackInput').value)||10000);
   setStructure(makePreset('standard'),0);
   updateSavedView();
