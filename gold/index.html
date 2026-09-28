@@ -664,7 +664,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('levelNumber').textContent = isBreak ? 'Break' : `Level ${item.level}`;
     $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)} / ${formatNumber(item.ante || 0)}`;
     $('timerText').textContent = formatTime(secondsLeft);
-    $('statusText').textContent = running ? 'Running' : secondsLeft === 0 ? 'Finished' : 'Ready';
+    // Status badge removed from the clock UI; timer state is still tracked internally.
     $('clockTournamentName').textContent = $('tournamentName').value || 'Untitled tournament';
     const n = nextPlayableIndex(currentIndex);
     if (isBreak) {
