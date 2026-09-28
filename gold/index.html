@@ -148,8 +148,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div class="next">
                 <span>Next level</span>
                 <strong id="nextText">50 / 100 / 100</strong>
-                <span>Players</span>
-                <strong id="playersDisplay">30</strong>
+                <span>Remaining / Entries</span>
+                <strong id="playersDisplay">30 / 30</strong>
                 <span>Avg. stack</span>
                 <strong id="avgStackDisplay">10,000</strong>
               </div>
@@ -433,6 +433,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   let running = false;
   let currentSaveId = null;
   let totalChipsInPlay = 300000;
+  let totalEntries = 30;
 
   const GOLD_DEFAULT_PAYOUTS = [
     {place:1, prize:'1,000 €'},
@@ -656,6 +657,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   function renderClock() {
     ensureLevelNumbers();
     const players=Math.max(2,Number($('playersInput').value)||30);
+    const entries=Math.max(players,totalEntries||players);
     const avgStack=players>0 ? totalChipsInPlay/players : Math.max(100,Number($('stackInput').value)||10000);
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
@@ -670,9 +672,9 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     } else {
       $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
     }
-    $('playersDisplay').textContent=formatNumber(players);
+    $('playersDisplay').textContent=formatNumber(players)+' / '+formatNumber(entries);
     $('avgStackDisplay').textContent=formatNumber(avgStack);
-    $('subtitle').textContent = `${players} players · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
+    $('subtitle').textContent = `${players} remaining / ${entries} entries · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
   }
 
   function start() {
@@ -877,7 +879,6 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       totalChipsInPlay += Math.max(100,Number($('stackInput').value)||10000);
     }
     $('playersInput').value=nextPlayers;
-    $('setupPlayers').value=nextPlayers;
     renderClock();
     updateSummary();
   }
@@ -887,6 +888,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const value=Math.min(1000,Math.max(2,(Number($('setupPlayers').value)||30)+delta));
     $('setupPlayers').value=value;
     $('playersInput').value=value;
+    totalEntries=value;
     renderClock();
     updateSummary();
   }
@@ -897,6 +899,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const players=Math.min(1000,Math.max(2,Number($('playersInput').value)||30));
     $('playersInput').value=players;
     $('setupPlayers').value=players;
+    totalEntries=players;
     totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
     renderClock(); updateSummary();
   });
@@ -911,6 +914,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const players=Math.min(1000,Math.max(2,Number($('setupPlayers').value)||30));
     $('setupPlayers').value=players;
     $('playersInput').value=players;
+    totalEntries=players;
     totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
     renderClock(); updateSummary();
   });
@@ -1002,6 +1006,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   };
   readMediaConfig();
   renderPayouts();renderBrand();renderSponsors();
+  totalEntries=Math.max(2,Number($('playersInput').value)||30);
   totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*Math.max(100,Number($('stackInput').value)||10000);
   setStructure(makePreset('standard'),0);
   updateSavedView();
