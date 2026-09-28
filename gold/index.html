@@ -999,9 +999,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       if(adElapsed>=interval){adElapsed=0;showGoldAd();}
     }
   };
-  renderPayouts();renderBrand();renderSponsors();
-
   readMediaConfig();
+  renderPayouts();renderBrand();renderSponsors();
   totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*Math.max(100,Number($('stackInput').value)||10000);
   setStructure(makePreset('standard'),0);
   updateSavedView();
