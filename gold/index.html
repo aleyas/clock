@@ -90,9 +90,16 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-brand-mark{position:absolute;top:18px;left:50%;transform:translateX(-50%);max-width:min(260px,55%);max-height:72px;object-fit:contain;z-index:3;padding:6px 10px;background:rgba(18,24,32,.78);border:1px solid #3a4551;border-radius:10px}.clock-card.has-brand .clock-top{padding-top:82px}
-.gold-powered{position:absolute;right:18px;bottom:14px;font-size:10px;color:#98a3ae;z-index:3}
-.gold-payouts{position:absolute;right:18px;top:75px;width:210px;background:rgba(18,24,32,.9);border:1px solid #3a4551;border-radius:12px;padding:10px;font-size:11px;color:#dce3ea;z-index:2}
+.gold-side-panel{position:absolute;right:18px;top:18px;bottom:18px;width:46%;display:grid;grid-template-rows:1fr 1fr 58px;gap:16px;z-index:3}
+.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.gold-brand-box img,.gold-sponsor-box img{max-width:92%;max-height:88%;object-fit:contain}
+.gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.gold-payouts{padding:0 12px;justify-content:flex-start}
+.gold-payout-marquee{white-space:nowrap;display:inline-block;color:#fff;font-size:16px;font-weight:800;animation:goldPayoutScroll 16s linear infinite}
+@keyframes goldPayoutScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.gold-powered{position:absolute;right:18px;bottom:14px;font-size:10px;color:#98a3ae;z-index:4}
+@media (max-width:900px){.gold-side-panel{width:43%;grid-template-rows:1fr 1fr 50px}.gold-payout-marquee{font-size:13px}}
+
 .gold-ad-overlay{position:fixed;inset:0;background:rgba(8,11,15,.94);z-index:9999;display:none;align-items:center;justify-content:center;padding:30px}
 .gold-ad-overlay.show{display:flex}
 .gold-ad-card{width:min(900px,94vw);height:min(620px,88vh);background:#fff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;position:relative;overflow:hidden}
@@ -145,6 +152,11 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
                 <span>Avg. stack</span>
                 <strong id="avgStackDisplay">10,000</strong>
               </div>
+            </div>
+            <div id="goldSidePanel" class="gold-side-panel">
+              <div id="goldBrandBox" class="gold-box gold-brand-box"><span class="gold-box-label">Branding</span></div>
+              <div id="goldSponsorBox" class="gold-box gold-sponsor-box"><span class="gold-box-label">Sponsor</span></div>
+              <div id="goldPayoutBox" class="gold-box gold-payouts"><div id="goldPayoutMarquee" class="gold-payout-marquee">Payouts</div></div>
             </div>
           </div>
           <div class="controls">
@@ -471,18 +483,25 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   }
   function renderGoldClockExtras(){
     const card=$('goldClockCard'); if(!card)return;
-    card.querySelectorAll('.gold-brand-mark,.gold-powered,.gold-payouts').forEach(x=>x.remove());
-    card.classList.remove('has-brand');
-    if(goldBrand.src){
-      card.classList.add('has-brand');
-      const img=document.createElement('img'); img.className='gold-brand-mark'; img.src=goldBrand.src; img.alt=goldBrand.name||'Club logo';
-      img.title=goldBrand.name||'Club logo';
-      card.appendChild(img);
+    const brandBox=$('goldBrandBox'), sponsorBox=$('goldSponsorBox'), payoutBox=$('goldPayoutBox'), marquee=$('goldPayoutMarquee');
+    if(brandBox){
+      brandBox.innerHTML=goldBrand.src
+        ? '<img src="'+goldBrand.src+'" alt="'+escapeHtml(goldBrand.name||'Club logo')+'">'
+        : '<span class="gold-box-label">Branding</span>';
     }
+    if(sponsorBox){
+      const sponsor=goldSponsors.find(s=>s.src);
+      sponsorBox.innerHTML=sponsor
+        ? '<img src="'+sponsor.src+'" alt="'+escapeHtml(sponsor.name||'Sponsor')+'">'
+        : '<span class="gold-box-label">Sponsor</span>';
+    }
+    if(payoutBox && marquee){
+      payoutBox.style.display=$('payoutVisible')?.checked && goldPayouts.length ? 'flex' : 'none';
+      const text=goldPayouts.map(p=>p.place+'. '+escapeHtml(p.prize||'—')).join('   •   ');
+      marquee.innerHTML=text || 'Payouts';
+    }
+    card.querySelectorAll('.gold-powered').forEach(x=>x.remove());
     const powered=document.createElement('div'); powered.className='gold-powered'; powered.textContent='powered by Poker and more'; card.appendChild(powered);
-    if($('payoutVisible')?.checked && goldPayouts.length){
-      const box=document.createElement('div'); box.className='gold-payouts'; box.innerHTML='<strong>Payouts</strong>'+goldPayouts.slice(0,5).map(p=>'<div style="display:flex;justify-content:space-between;margin-top:5px"><span>'+p.place+'.</span><span>'+escapeHtml(p.prize)+'</span></div>').join(''); card.appendChild(box);
-    }
   }
   function addSponsorFromData(name,src){
     goldSponsors.push({name:name||'Sponsor',src:src||''}); renderSponsors();
