@@ -605,13 +605,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
     $('levelNumber').textContent = isBreak ? 'Break' : item.level;
-    $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)} / ${formatNumber(item.ante || 0)}`;
+    $('blindText').textContent = isBreak ? 'Take a break' : `${formatNumber(item.sb)} / ${formatNumber(item.bb)}`;
     $('timerText').textContent = formatTime(secondsLeft);
     // Status badge removed from the clock UI; timer state is still tracked internally.
     $('clockTournamentName').textContent = $('tournamentName').value || 'Untitled tournament';
     const n = nextPlayableIndex(currentIndex);
     if (isBreak) {
-      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
+      $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)}` : 'Tournament end';
     } else {
       $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
     }
