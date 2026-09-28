@@ -32,7 +32,7 @@ h1{font-size:22px;margin:0;letter-spacing:-.5px}
 .panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .panel-head h2{font-size:15px;margin:0}
 .panel-body{padding:19px}
-.clock-card{background:var(--dark);color:#fff;border-radius:18px;padding:26px;min-height:395px;display:flex;flex-direction:column;justify-content:space-between}
+.clock-card{position:relative;overflow:hidden;background:var(--dark);color:#fff;border-radius:18px;padding:26px;min-height:395px;display:flex;flex-direction:column;justify-content:space-between}
 .clock-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .level-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .level-number{font-size:18px;color:#aab4c1;font-weight:750}
@@ -90,9 +90,16 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-brand-mark{position:absolute;top:18px;left:18px;max-width:180px;max-height:64px;object-fit:contain;z-index:3}
-.gold-powered{position:absolute;right:18px;bottom:14px;font-size:10px;color:#98a3ae;z-index:3}
-.gold-payouts{position:absolute;right:18px;top:75px;width:210px;background:rgba(18,24,32,.9);border:1px solid #3a4551;border-radius:12px;padding:10px;font-size:11px;color:#dce3ea;z-index:2}
+.gold-side-panel{position:absolute;right:18px;top:18px;bottom:72px;width:46%;display:grid;grid-template-rows:1fr 1fr;gap:12px;z-index:3}
+.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px}
+.gold-brand-box img,.gold-sponsor-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
+.gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.gold-payout-line{width:48%;margin:0 0 12px 0;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff}
+.gold-payout-marquee{white-space:nowrap;display:inline-block;min-width:max-content;font-size:15px;font-weight:800;animation:goldPayoutScroll 18s linear infinite}
+@keyframes goldPayoutScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.gold-powered{position:absolute;right:18px;bottom:10px;font-size:10px;color:#98a3ae;z-index:4}
+@media (max-width:900px){.gold-side-panel{width:43%}.gold-payout-line{width:50%}.gold-payout-marquee{font-size:13px}}
+
 .gold-ad-overlay{position:fixed;inset:0;background:rgba(8,11,15,.94);z-index:9999;display:none;align-items:center;justify-content:center;padding:30px}
 .gold-ad-overlay.show{display:flex}
 .gold-ad-card{width:min(900px,94vw);height:min(620px,88vh);background:#fff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;position:relative;overflow:hidden}
@@ -136,15 +143,20 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div id="statusText" class="status">Ready</div>
             </div>
             <div>
+              <div id="goldPayoutLine" class="gold-payout-line" aria-live="polite"></div>
               <div id="timerText" class="timer">10:00</div>
               <div class="next">
                 <span>Next level</span>
                 <strong id="nextText">50 / 100 / 100</strong>
-                <span>Players</span>
-                <strong id="playersDisplay">30</strong>
+                <span>Remaining / Entries</span>
+                <strong id="playersDisplay">30 / 30</strong>
                 <span>Avg. stack</span>
                 <strong id="avgStackDisplay">10,000</strong>
               </div>
+            </div>
+            <div id="goldSidePanel" class="gold-side-panel">
+              <div id="goldBrandBox" class="gold-box gold-brand-box"><span class="gold-box-label">Branding</span></div>
+              <div id="goldSponsorBox" class="gold-box gold-sponsor-box"><span class="gold-box-label">Sponsor</span></div>
             </div>
           </div>
           <div class="controls">
@@ -322,7 +334,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div class="field full"><label for="sponsorName">New sponsor name</label><input id="sponsorName" placeholder="e.g. Poker Shop"></div>
               <div class="field"><label for="sponsorUrl">Sponsor image URL</label><input id="sponsorUrl" placeholder="https://example.com/ad.jpg"></div>
               <div class="field"><label for="sponsorFile">Upload sponsor image</label><input id="sponsorFile" type="file" accept="image/*"></div>
-              <div class="field"><label for="adInterval">Show every (seconds)</label><input id="adInterval" type="number" min="10" max="3600" value="120"></div>
+              <div class="field"><label for="adInterval">Show every (seconds)</label><input id="adInterval" type="number" min="10" max="3600" value="10"></div>
               <div class="field"><label for="adDuration">Show for (seconds)</label><input id="adDuration" type="number" min="2" max="60" value="8"></div>
               <div class="field"><label><input id="adDuringLevels" type="checkbox" checked style="width:auto;margin-right:7px"> During levels</label></div>
               <div class="field"><label><input id="adDuringBreaks" type="checkbox" checked style="width:auto;margin-right:7px"> During breaks</label></div>
@@ -405,6 +417,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   const tabs = document.querySelectorAll('.tab');
   const views = document.querySelectorAll('.view');
   const SAVE_KEY = 'pokerClockGoldTournaments';
+  const MEDIA_KEY = 'pokerClockGoldMedia';
   const MAX_SAVES = 10;
 
   const BASE_SEQUENCE = [
@@ -420,6 +433,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   let running = false;
   let currentSaveId = null;
   let totalChipsInPlay = 300000;
+  let totalEntries = 30;
 
   const GOLD_DEFAULT_PAYOUTS = [
     {place:1, prize:'1,000 €'},
@@ -431,13 +445,31 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   let goldSponsors = [];
   let adElapsed = 0;
 
+  function readMediaConfig(){
+    try {
+      const data=JSON.parse(localStorage.getItem(MEDIA_KEY)||'null');
+      if(data){
+        goldBrand=data.brand?{...data.brand}:{name:'',src:''};
+        goldSponsors=Array.isArray(data.sponsors)?data.sponsors.map(x=>({...x})):[];
+      }
+    } catch {}
+  }
+  function writeMediaConfig(){
+    try {
+      localStorage.setItem(MEDIA_KEY,JSON.stringify({
+        brand:{...goldBrand},
+        sponsors:goldSponsors.map(x=>({...x}))
+      }));
+    } catch {}
+  }
+
   function goldData(){
     return {
       payouts: goldPayouts.map(x=>({...x})),
       payoutVisible: $('payoutVisible')?.checked !== false,
       brand: {...goldBrand},
       sponsors: goldSponsors.map(x=>({...x})),
-      adInterval: Number($('adInterval')?.value)||120,
+      adInterval: Number($('adInterval')?.value)||10,
       adDuration: Number($('adDuration')?.value)||8,
       adDuringLevels: $('adDuringLevels')?.checked !== false,
       adDuringBreaks: $('adDuringBreaks')?.checked !== false
@@ -471,34 +503,52 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   }
   function renderGoldClockExtras(){
     const card=$('goldClockCard'); if(!card)return;
-    card.querySelectorAll('.gold-brand-mark,.gold-powered,.gold-payouts').forEach(x=>x.remove());
-    if(goldBrand.src){
-      const img=document.createElement('img'); img.className='gold-brand-mark'; img.src=goldBrand.src; img.alt=goldBrand.name||'Club logo'; card.appendChild(img);
+    const brandBox=$('goldBrandBox'), sponsorBox=$('goldSponsorBox'), payoutLine=$('goldPayoutLine');
+    if(brandBox){
+      brandBox.innerHTML=goldBrand.src
+        ? '<img src="'+goldBrand.src+'" alt="'+escapeHtml(goldBrand.name||'Club logo')+'">'
+        : '<span class="gold-box-label">Branding</span>';
     }
+    if(sponsorBox){
+      const sponsor=goldSponsors.find(s=>s.src);
+      sponsorBox.innerHTML=sponsor
+        ? '<img src="'+sponsor.src+'" alt="'+escapeHtml(sponsor.name||'Sponsor')+'">'
+        : '<span class="gold-box-label">Sponsor</span>';
+    }
+    if(payoutLine){
+      const visible=$('payoutVisible')?.checked && goldPayouts.length;
+      payoutLine.style.display=visible ? 'flex' : 'none';
+      const text=goldPayouts.map(p=>p.place+'. '+escapeHtml(p.prize||'—')).join('   •   ');
+      payoutLine.innerHTML=visible ? '<div class="gold-payout-marquee">'+text+'</div>' : '';
+    }
+    card.querySelectorAll('.gold-powered').forEach(x=>x.remove());
     const powered=document.createElement('div'); powered.className='gold-powered'; powered.textContent='powered by Poker and more'; card.appendChild(powered);
-    if($('payoutVisible')?.checked && goldPayouts.length){
-      const box=document.createElement('div'); box.className='gold-payouts'; box.innerHTML='<strong>Payouts</strong>'+goldPayouts.slice(0,5).map(p=>'<div style="display:flex;justify-content:space-between;margin-top:5px"><span>'+p.place+'.</span><span>'+escapeHtml(p.prize)+'</span></div>').join(''); card.appendChild(box);
-    }
   }
   function addSponsorFromData(name,src){
-    goldSponsors.push({name:name||'Sponsor',src:src||''}); renderSponsors();
+    goldSponsors.push({name:name||'Sponsor',src:src||''}); writeMediaConfig(); renderSponsors(); renderGoldClockExtras();
   }
   function showGoldAd(){
     const eligible = structure[currentIndex]?.kind==='break' ? $('adDuringBreaks').checked : $('adDuringLevels').checked;
     if(!eligible || !goldSponsors.length)return;
     const sponsor=goldSponsors[Math.floor(Math.random()*goldSponsors.length)];
     if(!sponsor.src)return;
+    renderGoldClockExtras();
     $('goldAdImage').src=sponsor.src; $('goldAdFallback').style.display='none'; $('goldAdOverlay').classList.add('show');
     let left=Number($('adDuration').value)||8;
-    const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');}},1000);
+    const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');renderGoldClockExtras();}},1000);
   }
   function loadGoldData(g){
-    if(!g)return;
+    if(!g){
+      readMediaConfig();
+      renderPayouts();renderBrand();renderSponsors();
+      return;
+    }
+    readMediaConfig();
     goldPayouts=Array.isArray(g.payouts)?g.payouts.map(x=>({...x})):GOLD_DEFAULT_PAYOUTS.map(x=>({...x}));
-    goldBrand=g.brand?{...g.brand}:{name:'',src:''};
-    goldSponsors=Array.isArray(g.sponsors)?g.sponsors.map(x=>({...x})):[];
+    goldBrand=(g.brand && g.brand.src)?{...g.brand}:({...goldBrand});
+    goldSponsors=(Array.isArray(g.sponsors) && g.sponsors.some(x=>x.src))?g.sponsors.map(x=>({...x})):goldSponsors;
     if($('payoutVisible'))$('payoutVisible').checked=g.payoutVisible!==false;
-    if($('adInterval'))$('adInterval').value=g.adInterval||120;
+    if($('adInterval'))$('adInterval').value=g.adInterval||10;
     if($('adDuration'))$('adDuration').value=g.adDuration||8;
     if($('adDuringLevels'))$('adDuringLevels').checked=g.adDuringLevels!==false;
     if($('adDuringBreaks'))$('adDuringBreaks').checked=g.adDuringBreaks!==false;
@@ -607,6 +657,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   function renderClock() {
     ensureLevelNumbers();
     const players=Math.max(2,Number($('playersInput').value)||30);
+    const entries=Math.max(players,totalEntries||players);
     const avgStack=players>0 ? totalChipsInPlay/players : Math.max(100,Number($('stackInput').value)||10000);
     const item = structure[currentIndex] || {kind:'level',level:1,minutes:10,sb:25,bb:50,ante:0};
     const isBreak = item.kind === 'break';
@@ -621,9 +672,9 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     } else {
       $('nextText').textContent = n >= 0 ? `${formatNumber(structure[n].sb)} / ${formatNumber(structure[n].bb)} / ${formatNumber(structure[n].ante || 0)}` : 'Tournament end';
     }
-    $('playersDisplay').textContent=formatNumber(players);
+    $('playersDisplay').textContent=formatNumber(players)+' / '+formatNumber(entries);
     $('avgStackDisplay').textContent=formatNumber(avgStack);
-    $('subtitle').textContent = `${players} players · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
+    $('subtitle').textContent = `${players} remaining / ${entries} entries · Avg. stack ${formatNumber(avgStack)} · ${readSaves().length} saved tournaments · local browser storage`;
   }
 
   function start() {
@@ -707,7 +758,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('playersInput').value=item.players || 30; $('setupPlayers').value=item.players || 30;
     $('stackInput').value=item.stack; $('setupStack').value=item.stack;
     totalChipsInPlay=Number(item.totalChips) || (Number(item.players || 30)*Number(item.stack || 10000));
-    setStructure(item.structure,0); loadGoldData(item.gold); switchView('clockView');
+    setStructure(item.structure,0); loadGoldData(item.gold); writeMediaConfig(); switchView('clockView');
   }
   function newTournament() {
     currentSaveId=null;
@@ -828,7 +879,6 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       totalChipsInPlay += Math.max(100,Number($('stackInput').value)||10000);
     }
     $('playersInput').value=nextPlayers;
-    $('setupPlayers').value=nextPlayers;
     renderClock();
     updateSummary();
   }
@@ -838,6 +888,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const value=Math.min(1000,Math.max(2,(Number($('setupPlayers').value)||30)+delta));
     $('setupPlayers').value=value;
     $('playersInput').value=value;
+    totalEntries=value;
     renderClock();
     updateSummary();
   }
@@ -848,6 +899,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const players=Math.min(1000,Math.max(2,Number($('playersInput').value)||30));
     $('playersInput').value=players;
     $('setupPlayers').value=players;
+    totalEntries=players;
     totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
     renderClock(); updateSummary();
   });
@@ -862,6 +914,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     const players=Math.min(1000,Math.max(2,Number($('setupPlayers').value)||30));
     $('setupPlayers').value=players;
     $('playersInput').value=players;
+    totalEntries=players;
     totalChipsInPlay=players*Math.max(100,Number($('stackInput').value)||10000);
     renderClock(); updateSummary();
   });
@@ -902,13 +955,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   $('addPayoutBtn').addEventListener('click',()=>{goldPayouts.push({place:goldPayouts.length+1,prize:''});renderPayouts();});
   $('payoutVisible').addEventListener('change',renderGoldClockExtras);
 
-  $('brandName').addEventListener('input',()=>{goldBrand.name=$('brandName').value;renderBrand();});
-  $('brandUrl').addEventListener('input',()=>{goldBrand.src=$('brandUrl').value.trim();renderBrand();});
+  $('brandName').addEventListener('input',()=>{goldBrand.name=$('brandName').value;writeMediaConfig();renderBrand();});
+  $('brandUrl').addEventListener('input',()=>{goldBrand.src=$('brandUrl').value.trim();writeMediaConfig();renderBrand();});
   $('brandFile').addEventListener('change',e=>{
     const file=e.target.files?.[0]; if(!file)return;
-    const reader=new FileReader(); reader.onload=()=>{goldBrand.src=reader.result;renderBrand();}; reader.readAsDataURL(file);
+    const reader=new FileReader(); reader.onload=()=>{goldBrand.src=reader.result;writeMediaConfig();renderBrand();}; reader.readAsDataURL(file);
   });
-  $('clearBrandBtn').addEventListener('click',()=>{goldBrand={name:'',src:''};$('brandName').value='';$('brandUrl').value='';$('brandFile').value='';renderBrand();});
+  $('clearBrandBtn').addEventListener('click',()=>{goldBrand={name:'',src:''};$('brandName').value='';$('brandUrl').value='';$('brandFile').value='';writeMediaConfig();renderBrand();});
 
   $('addSponsorBtn').addEventListener('click',()=>{
     const name=$('sponsorName').value.trim() || 'Sponsor '+(goldSponsors.length+1);
@@ -923,7 +976,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   });
   $('sponsorEditor').addEventListener('click',e=>{
     const b=e.target.closest('[data-sponsor-delete]');if(!b)return;
-    goldSponsors.splice(Number(b.dataset.sponsorDelete),1);renderSponsors();
+    goldSponsors.splice(Number(b.dataset.sponsorDelete),1);writeMediaConfig();renderSponsors();renderGoldClockExtras();
   });
 
   $('controlStart').addEventListener('click',start);
@@ -947,12 +1000,13 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if($('goldAdClock'))$('goldAdClock').textContent=formatTime(secondsLeft);
     if(running){
       adElapsed++;
-      const interval=Math.max(10,Number($('adInterval')?.value)||120);
+      const interval=Math.max(10,Number($('adInterval')?.value)||10);
       if(adElapsed>=interval){adElapsed=0;showGoldAd();}
     }
   };
+  readMediaConfig();
   renderPayouts();renderBrand();renderSponsors();
-
+  totalEntries=Math.max(2,Number($('playersInput').value)||30);
   totalChipsInPlay=Math.max(2,Number($('playersInput').value)||30)*Math.max(100,Number($('stackInput').value)||10000);
   setStructure(makePreset('standard'),0);
   updateSavedView();
