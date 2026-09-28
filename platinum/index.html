@@ -452,7 +452,8 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if(payoutLine){
       const visible=$('payoutVisible')?.checked && goldPayouts.length;
       payoutLine.style.display=visible ? 'flex' : 'none';
-      const text=goldPayouts.map(p=>p.place+'. '+escapeHtml(p.prize||'—')).join('   •   ');
+      const ordinal=(n)=>{const x=Number(n);if(x%100>=11&&x%100<=13)return x+'th';const r=x%10;return x+(r===1?'st':r===2?'nd':r===3?'rd':'th');};
+      const text=goldPayouts.map(p=>ordinal(p.place)+' '+escapeHtml(p.prize||'—')).join('   •   ');
       payoutLine.innerHTML=visible ? '<div class="gold-payout-marquee">'+text+'</div>' : '';
     }
     card.querySelectorAll('.gold-powered').forEach(x=>x.remove());
