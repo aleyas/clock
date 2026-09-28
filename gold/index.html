@@ -90,7 +90,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-brand-mark{position:absolute;top:18px;left:18px;max-width:180px;max-height:64px;object-fit:contain;z-index:3}
+.gold-brand-mark{position:absolute;top:18px;left:50%;transform:translateX(-50%);max-width:min(260px,55%);max-height:72px;object-fit:contain;z-index:3;padding:6px 10px;background:rgba(18,24,32,.78);border:1px solid #3a4551;border-radius:10px}.clock-card.has-brand .clock-top{padding-top:82px}
 .gold-powered{position:absolute;right:18px;bottom:14px;font-size:10px;color:#98a3ae;z-index:3}
 .gold-payouts{position:absolute;right:18px;top:75px;width:210px;background:rgba(18,24,32,.9);border:1px solid #3a4551;border-radius:12px;padding:10px;font-size:11px;color:#dce3ea;z-index:2}
 .gold-ad-overlay{position:fixed;inset:0;background:rgba(8,11,15,.94);z-index:9999;display:none;align-items:center;justify-content:center;padding:30px}
@@ -472,8 +472,12 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   function renderGoldClockExtras(){
     const card=$('goldClockCard'); if(!card)return;
     card.querySelectorAll('.gold-brand-mark,.gold-powered,.gold-payouts').forEach(x=>x.remove());
+    card.classList.remove('has-brand');
     if(goldBrand.src){
-      const img=document.createElement('img'); img.className='gold-brand-mark'; img.src=goldBrand.src; img.alt=goldBrand.name||'Club logo'; card.appendChild(img);
+      card.classList.add('has-brand');
+      const img=document.createElement('img'); img.className='gold-brand-mark'; img.src=goldBrand.src; img.alt=goldBrand.name||'Club logo';
+      img.title=goldBrand.name||'Club logo';
+      card.appendChild(img);
     }
     const powered=document.createElement('div'); powered.className='gold-powered'; powered.textContent='powered by Poker and more'; card.appendChild(powered);
     if($('payoutVisible')?.checked && goldPayouts.length){
