@@ -168,6 +168,10 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
                 <input id="setupStack" type="number" min="100" step="100" value="10000">
               </div>
               <div class="field">
+                <label for="setupEntryFee">Entry fee (€)</label>
+                <input id="setupEntryFee" type="number" min="0" step="1" value="600">
+              </div>
+              <div class="field">
                 <label for="presetSelect">Structure preset</label>
                 <select id="presetSelect">
                   <option value="standard">Standard Home</option>
@@ -834,6 +838,10 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     $('playersInput').value=value;
     totalEntries=value;
     if($('entryFee') && $('setupEntryFee')){
+    $('entryFee').addEventListener('input',()=>{ $('setupEntryFee').value=$('entryFee').value; renderClock(); });
+    $('setupEntryFee').addEventListener('input',()=>{ $('entryFee').value=$('setupEntryFee').value; renderClock(); });
+  }
+  if($('entryFee') && $('setupEntryFee')){
     $('entryFee').addEventListener('input',()=>{ $('setupEntryFee').value=$('entryFee').value; renderClock(); });
     $('setupEntryFee').addEventListener('input',()=>{ $('entryFee').value=$('setupEntryFee').value; renderClock(); });
   }
