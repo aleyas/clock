@@ -90,15 +90,15 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-side-panel{position:absolute;right:18px;top:18px;bottom:18px;width:46%;display:grid;grid-template-rows:1fr 1fr 58px;gap:16px;z-index:3}
-.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center}
-.gold-brand-box img,.gold-sponsor-box img{max-width:92%;max-height:88%;object-fit:contain}
+.gold-side-panel{position:absolute;right:18px;top:18px;bottom:18px;width:46%;display:grid;grid-template-rows:1fr 1fr;gap:16px;z-index:3}
+.gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px}
+.gold-brand-box img,.gold-sponsor-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 .gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
-.gold-payouts{padding:0 12px;justify-content:flex-start}
-.gold-payout-marquee{white-space:nowrap;display:inline-block;color:#fff;font-size:16px;font-weight:800;animation:goldPayoutScroll 16s linear infinite}
+.gold-payout-line{width:calc(100% - 52%);margin:0 0 14px auto;height:30px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid #303944;border-bottom:1px solid #303944;color:#fff}
+.gold-payout-marquee{white-space:nowrap;display:inline-block;min-width:max-content;font-size:15px;font-weight:800;animation:goldPayoutScroll 18s linear infinite}
 @keyframes goldPayoutScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.gold-powered{position:absolute;right:18px;bottom:14px;font-size:10px;color:#98a3ae;z-index:4}
-@media (max-width:900px){.gold-side-panel{width:43%;grid-template-rows:1fr 1fr 50px}.gold-payout-marquee{font-size:13px}}
+.gold-powered{position:absolute;right:18px;bottom:10px;font-size:10px;color:#98a3ae;z-index:4}
+@media (max-width:900px){.gold-side-panel{width:43%}.gold-payout-line{width:54%}.gold-payout-marquee{font-size:13px}}
 
 .gold-ad-overlay{position:fixed;inset:0;background:rgba(8,11,15,.94);z-index:9999;display:none;align-items:center;justify-content:center;padding:30px}
 .gold-ad-overlay.show{display:flex}
@@ -144,6 +144,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
             </div>
             <div>
               <div id="timerText" class="timer">10:00</div>
+              <div id="goldPayoutLine" class="gold-payout-line" aria-live="polite"></div>
               <div class="next">
                 <span>Next level</span>
                 <strong id="nextText">50 / 100 / 100</strong>
@@ -156,7 +157,6 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
             <div id="goldSidePanel" class="gold-side-panel">
               <div id="goldBrandBox" class="gold-box gold-brand-box"><span class="gold-box-label">Branding</span></div>
               <div id="goldSponsorBox" class="gold-box gold-sponsor-box"><span class="gold-box-label">Sponsor</span></div>
-              <div id="goldPayoutBox" class="gold-box gold-payouts"><div id="goldPayoutMarquee" class="gold-payout-marquee">Payouts</div></div>
             </div>
           </div>
           <div class="controls">
@@ -483,7 +483,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   }
   function renderGoldClockExtras(){
     const card=$('goldClockCard'); if(!card)return;
-    const brandBox=$('goldBrandBox'), sponsorBox=$('goldSponsorBox'), payoutBox=$('goldPayoutBox'), marquee=$('goldPayoutMarquee');
+    const brandBox=$('goldBrandBox'), sponsorBox=$('goldSponsorBox'), payoutLine=$('goldPayoutLine');
     if(brandBox){
       brandBox.innerHTML=goldBrand.src
         ? '<img src="'+goldBrand.src+'" alt="'+escapeHtml(goldBrand.name||'Club logo')+'">'
@@ -495,22 +495,24 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
         ? '<img src="'+sponsor.src+'" alt="'+escapeHtml(sponsor.name||'Sponsor')+'">'
         : '<span class="gold-box-label">Sponsor</span>';
     }
-    if(payoutBox && marquee){
-      payoutBox.style.display=$('payoutVisible')?.checked && goldPayouts.length ? 'flex' : 'none';
+    if(payoutLine){
+      const visible=$('payoutVisible')?.checked && goldPayouts.length;
+      payoutLine.style.display=visible ? 'flex' : 'none';
       const text=goldPayouts.map(p=>p.place+'. '+escapeHtml(p.prize||'—')).join('   •   ');
-      marquee.innerHTML=text || 'Payouts';
+      payoutLine.innerHTML=visible ? '<div class="gold-payout-marquee">'+text+'</div>' : '';
     }
     card.querySelectorAll('.gold-powered').forEach(x=>x.remove());
     const powered=document.createElement('div'); powered.className='gold-powered'; powered.textContent='powered by Poker and more'; card.appendChild(powered);
   }
   function addSponsorFromData(name,src){
-    goldSponsors.push({name:name||'Sponsor',src:src||''}); renderSponsors();
+    goldSponsors.push({name:name||'Sponsor',src:src||''}); renderSponsors(); renderGoldClockExtras();
   }
   function showGoldAd(){
     const eligible = structure[currentIndex]?.kind==='break' ? $('adDuringBreaks').checked : $('adDuringLevels').checked;
     if(!eligible || !goldSponsors.length)return;
     const sponsor=goldSponsors[Math.floor(Math.random()*goldSponsors.length)];
     if(!sponsor.src)return;
+    renderGoldClockExtras();
     $('goldAdImage').src=sponsor.src; $('goldAdFallback').style.display='none'; $('goldAdOverlay').classList.add('show');
     let left=Number($('adDuration').value)||8;
     const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');}},1000);
