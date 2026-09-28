@@ -90,7 +90,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
   .row.break{grid-template-columns:34px 1fr auto}.next{display:flex;flex-wrap:wrap}
 }
 
-.gold-side-panel{position:absolute;right:18px;top:18px;bottom:18px;width:46%;display:grid;grid-template-rows:1fr 1fr;gap:16px;z-index:3}
+.gold-side-panel{position:absolute;right:18px;top:18px;bottom:72px;width:46%;display:grid;grid-template-rows:1fr 1fr;gap:12px;z-index:3}
 .gold-box{min-width:0;min-height:0;border:1px solid #3a4551;border-radius:12px;background:rgba(18,24,32,.58);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:12px}
 .gold-brand-box img,.gold-sponsor-box img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 .gold-box-label{color:#697785;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
@@ -334,7 +334,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
               <div class="field full"><label for="sponsorName">New sponsor name</label><input id="sponsorName" placeholder="e.g. Poker Shop"></div>
               <div class="field"><label for="sponsorUrl">Sponsor image URL</label><input id="sponsorUrl" placeholder="https://example.com/ad.jpg"></div>
               <div class="field"><label for="sponsorFile">Upload sponsor image</label><input id="sponsorFile" type="file" accept="image/*"></div>
-              <div class="field"><label for="adInterval">Show every (seconds)</label><input id="adInterval" type="number" min="10" max="3600" value="120"></div>
+              <div class="field"><label for="adInterval">Show every (seconds)</label><input id="adInterval" type="number" min="10" max="3600" value="10"></div>
               <div class="field"><label for="adDuration">Show for (seconds)</label><input id="adDuration" type="number" min="2" max="60" value="8"></div>
               <div class="field"><label><input id="adDuringLevels" type="checkbox" checked style="width:auto;margin-right:7px"> During levels</label></div>
               <div class="field"><label><input id="adDuringBreaks" type="checkbox" checked style="width:auto;margin-right:7px"> During breaks</label></div>
@@ -468,7 +468,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       payoutVisible: $('payoutVisible')?.checked !== false,
       brand: {...goldBrand},
       sponsors: goldSponsors.map(x=>({...x})),
-      adInterval: Number($('adInterval')?.value)||120,
+      adInterval: Number($('adInterval')?.value)||10,
       adDuration: Number($('adDuration')?.value)||8,
       adDuringLevels: $('adDuringLevels')?.checked !== false,
       adDuringBreaks: $('adDuringBreaks')?.checked !== false
@@ -534,7 +534,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     renderGoldClockExtras();
     $('goldAdImage').src=sponsor.src; $('goldAdFallback').style.display='none'; $('goldAdOverlay').classList.add('show');
     let left=Number($('adDuration').value)||8;
-    const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');}},1000);
+    const id=setInterval(()=>{ $('goldAdClock').textContent=formatTime(secondsLeft); left--; if(left<=0){clearInterval(id);$('goldAdOverlay').classList.remove('show');renderGoldClockExtras();}},1000);
   }
   function loadGoldData(g){
     if(!g){
@@ -542,11 +542,12 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
       renderPayouts();renderBrand();renderSponsors();
       return;
     }
+    readMediaConfig();
     goldPayouts=Array.isArray(g.payouts)?g.payouts.map(x=>({...x})):GOLD_DEFAULT_PAYOUTS.map(x=>({...x}));
-    goldBrand=g.brand?{...g.brand}:{name:'',src:''};
-    goldSponsors=Array.isArray(g.sponsors)?g.sponsors.map(x=>({...x})):[];
+    goldBrand=(g.brand && g.brand.src)?{...g.brand}:({...goldBrand});
+    goldSponsors=(Array.isArray(g.sponsors) && g.sponsors.some(x=>x.src))?g.sponsors.map(x=>({...x})):goldSponsors;
     if($('payoutVisible'))$('payoutVisible').checked=g.payoutVisible!==false;
-    if($('adInterval'))$('adInterval').value=g.adInterval||120;
+    if($('adInterval'))$('adInterval').value=g.adInterval||10;
     if($('adDuration'))$('adDuration').value=g.adDuration||8;
     if($('adDuringLevels'))$('adDuringLevels').checked=g.adDuringLevels!==false;
     if($('adDuringBreaks'))$('adDuringBreaks').checked=g.adDuringBreaks!==false;
@@ -995,7 +996,7 @@ input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--a
     if($('goldAdClock'))$('goldAdClock').textContent=formatTime(secondsLeft);
     if(running){
       adElapsed++;
-      const interval=Math.max(10,Number($('adInterval')?.value)||120);
+      const interval=Math.max(10,Number($('adInterval')?.value)||10);
       if(adElapsed>=interval){adElapsed=0;showGoldAd();}
     }
   };
