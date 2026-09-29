@@ -15,6 +15,8 @@ create table if not exists public.tournaments (
   starting_stack integer not null default 10000,
   total_entries integer not null default 30,
   entry_fee numeric(10,2) not null default 600,
+  brand_name text,
+  brand_image_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
