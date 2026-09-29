@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 
 type Session={id:string;pairing_code:string;status:string;current_index:number;remaining_seconds:number;server_started_at:string|null;remaining_players:number;total_entries:number;tournament_id:string};
 type Level={position:number;kind:"level"|"break";minutes:number;sb:number|null;bb:number|null;ante:number|null};
-type Sponsor={name:string;image_url:string|null;enabled:boolean;display_order:number};
+type Sponsor={name:string;image_url:string|null;enabled:boolean;display_order:number;interval_seconds?:number;duration_seconds?:number};
 
 function fmt(s:number){const m=Math.floor(Math.max(0,s)/60),sec=Math.max(0,s)%60;return String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0")}
 function ordinal(n:number){const r=n%100;if(r>=11&&r<=13)return n+"th";return n+(n%10===1?"st":n%10===2?"nd":n%10===3?"rd":"th")}
