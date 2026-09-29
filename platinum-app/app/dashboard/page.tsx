@@ -78,7 +78,7 @@ export default function Dashboard(){
         </div>
       </div>
       <div className="panel">
-        <div className="panel-head"><h2>Saved tournaments</h2><Link className="text-link" href="/tv">Open TV mode</Link></div>
+        <div className="panel-head"><h2>Saved tournaments</h2><div className="header-actions"><Link className="text-link" href="/subscription">Subscription</Link><Link className="text-link" href="/tv">TV mode</Link></div></div>
         <div className="panel-body list">
           {rows.map(t=><div className="tournament-card" key={t.id}>
             <div><h3>{t.name}</h3><p className="muted">{t.total_entries} entries · {Number(t.entry_fee).toLocaleString("de-DE",{style:"currency",currency:"EUR"})} · stack {t.starting_stack.toLocaleString()}</p></div>
