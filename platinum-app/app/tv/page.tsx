@@ -21,6 +21,7 @@ export default function TV(){
   const [brandImage,setBrandImage]=useState<string|null>(null);
   const [payouts,setPayouts]=useState<{place:number;prize:string;visible:boolean}[]>([]);
   const [sponsors,setSponsors]=useState<Sponsor[]>([]);
+  const [adVisible,setAdVisible]=useState(false);
   const [now,setNow]=useState(Date.now());
   const [code,setCode]=useState("");
   const params=typeof window!=="undefined"?new URLSearchParams(window.location.search):null;
@@ -42,6 +43,20 @@ export default function TV(){
   }
 
   useEffect(()=>{connect();const timer=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(timer)},[]);
+  useEffect(()=>{
+    if(!session)return;
+    const sponsor=sponsors[0];
+    if(!sponsor?.image_url)return;
+    const interval=Math.max(10,(sponsor.interval_seconds||10))*1000;
+    const duration=Math.max(3,(sponsor.duration_seconds||8))*1000;
+    const timer=setInterval(()=>{
+      if(session.status==="running"){
+        setAdVisible(true);
+        window.setTimeout(()=>setAdVisible(false),duration);
+      }
+    },interval);
+    return()=>clearInterval(timer);
+  },[session?.status,sponsors]);
   useEffect(()=>{
     if(!session)return;
     const ch=supabase.channel("tv-"+session.id).on("postgres_changes",{event:"*",schema:"public",table:"sessions",filter:"id=eq."+session.id},payload=>setSession(payload.new as Session)).subscribe();
@@ -95,5 +110,6 @@ export default function TV(){
       <div><span>AVG STACK</span><strong>{avgStack.toLocaleString("de-DE")}</strong></div>
     </div>
     <div className="tv-powered">powered by Poker and more</div>
+    {adVisible && sponsor?.image_url && <div className="tv-ad-overlay"><div className="tv-ad-card"><img src={sponsor.image_url} alt={sponsor.name}/><div className="tv-ad-clock">{fmt(remaining)}</div></div></div>}
   </main>;
 }
