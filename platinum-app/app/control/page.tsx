@@ -39,6 +39,13 @@ export default function Control(){
 
   useEffect(()=>{load();const timer=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(timer)},[sessionId]);
   useEffect(()=>{
+    if(!sessionId||session?.status!=="running")return;
+    const timer=setInterval(async()=>{
+      await supabase.rpc("tick_session",{p_session_id:sessionId});
+    },1000);
+    return()=>clearInterval(timer);
+  },[sessionId,session?.status]);
+  useEffect(()=>{
     if(!sessionId)return;
     const ch=supabase.channel("session-"+sessionId).on("postgres_changes",{event:"*",schema:"public",table:"sessions",filter:"id=eq."+sessionId},payload=>setSession(payload.new as Session)).subscribe();
     return()=>{supabase.removeChannel(ch)};
@@ -52,17 +59,17 @@ export default function Control(){
 
   async function command(type:string,delta=0){
     if(!session)return;
-    const current=remaining;
-    const patch:any={updated_at:new Date().toISOString()};
-    if(type==="START"){patch.status="running";patch.server_started_at=new Date().toISOString();patch.remaining_seconds=current;}
-    if(type==="PAUSE"){patch.status="paused";patch.remaining_seconds=current;patch.server_started_at=null;}
-    if(type==="TIME_ADJUST"){patch.remaining_seconds=Math.max(0,current+delta);if(session.status==="running")patch.server_started_at=new Date().toISOString();}
-    if(type==="PLAYER_INCREMENT")patch.remaining_players=Math.min(session.total_entries,session.remaining_players+1);
-    if(type==="PLAYER_DECREMENT")patch.remaining_players=Math.max(0,session.remaining_players-1);
-    if(type==="RESET"){patch.status="ready";patch.current_index=0;patch.remaining_seconds=(levels[0]?.minutes||10)*60;patch.server_started_at=null;}
-    if(type==="NEXT"){const n=Math.min(levels.length-1,session.current_index+1);patch.current_index=n;patch.remaining_seconds=(levels[n]?.minutes||10)*60;patch.server_started_at=session.status==="running"?new Date().toISOString():null;}
-    if(type==="PREV"){const n=Math.max(0,session.current_index-1);patch.current_index=n;patch.remaining_seconds=(levels[n]?.minutes||10)*60;patch.server_started_at=session.status==="running"?new Date().toISOString():null;}
-    await supabase.from("sessions").update(patch).eq("id",session.id);
+    const {data,error}=await supabase.rpc("session_command",{
+      p_session_id:session.id,
+      p_command:type,
+      p_delta:delta
+    });
+    if(error){
+      console.error("Session command failed",error);
+      return;
+    }
+    const next=Array.isArray(data)?data[0]:data;
+    if(next)setSession(next as Session);
   }
 
   if(!session)return <main className="center-page"><div className="panel panel-body">Loading session…</div></main>;
