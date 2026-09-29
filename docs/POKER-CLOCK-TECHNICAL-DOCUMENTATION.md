@@ -834,6 +834,64 @@ The main remaining gap is production hardening rather than the basic product con
 | Static prototypes | HTML/CSS/vanilla JS + localStorage |
 | Production status | MVP source implemented; deployment/hardening pending |
 
+
+
+---
+
+## 30. Phase 1 — Production Session Engine
+
+Phase 1 implementation has now started in platinum-app.
+
+### Server-authoritative session state
+
+Organizer controls no longer write the sessions table directly from the browser. They call PostgreSQL RPC functions:
+
+- session_command(session_id, command, delta)
+- tick_session(session_id, command)
+
+The RPCs lock the session row with PostgreSQL row-level locking, verify that the authenticated user owns the session, calculate elapsed time from server_started_at, update the canonical session state, increment a session version, and record the command in session_events.
+
+### Supported commands
+
+- START
+- PAUSE
+- TIME_ADJUST
+- PLAYER_INCREMENT
+- PLAYER_DECREMENT
+- NEXT
+- PREV
+- RESET
+
+### Automatic level progression
+
+tick_session advances expired levels on the server and carries elapsed overflow into the next level. This prevents a delayed client tick from losing tournament time.
+
+The current Phase 1 implementation triggers the tick from the authenticated organizer control page once per second. A later production phase should move this responsibility to a backend scheduler/worker so level progression continues even when the organizer device is disconnected.
+
+### Audit trail
+
+session_events records session commands with:
+
+- session
+- owner
+- command
+- time adjustment
+- timestamp
+
+### Concurrency protection
+
+The new sessions.version field provides a monotonic session revision. PostgreSQL row locking prevents concurrent organizer commands from overwriting a newer canonical state.
+
+### Files
+
+- platinum-app/supabase/schema.sql
+- platinum-app/supabase/migrations/20260929_phase1_session_engine.sql
+- platinum-app/app/control/page.tsx
+
+### Phase 1 status
+
+Implemented in GitHub source. The Supabase database itself has not been executed yet because the project does not have a connected Supabase instance. The next infrastructure step is to create the Supabase project and apply the schema/migration.
+
 ---
 
 **Document maintained as the technical reference for the Poker Clock project.**
