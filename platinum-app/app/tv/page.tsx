@@ -84,7 +84,7 @@ export default function TV(){
         <div><span>ANTE</span><strong>{level.ante||0}</strong></div>
         <div className="next-row"><span>NEXT LEVEL</span><strong>{next?.kind==="break"?"BREAK":next?(next.sb||0)+" / "+(next.bb||0):"Tournament end"}</strong></div>
       </div>
-      {payoutText && <div className="tv-payouts">{payoutText}</div>}
+      {payoutText && <div className={"tv-payouts"+(payoutText.length>55?" ticker":"")}><span>{payoutText}</span></div>}
     </div>
     <div className="tv-right">
       <div><span>LEVEL</span><strong>{level.kind==="break"?"BREAK":level.position}</strong></div>
