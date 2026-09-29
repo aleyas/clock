@@ -16,6 +16,9 @@ export default function TV(){
   const [levels,setLevels]=useState<Level[]>([]);
   const [name,setName]=useState("Poker Tournament");
   const [entry,setEntry]=useState(600);
+  const [startingStack,setStartingStack]=useState(10000);
+  const [brandName,setBrandName]=useState("");
+  const [brandImage,setBrandImage]=useState<string|null>(null);
   const [payouts,setPayouts]=useState<{place:number;prize:string;visible:boolean}[]>([]);
   const [sponsors,setSponsors]=useState<Sponsor[]>([]);
   const [now,setNow]=useState(Date.now());
@@ -28,8 +31,8 @@ export default function TV(){
     const {data:s,error}=await supabase.from("sessions").select("*").eq("pairing_code",pairingCode).neq("status","finished").limit(1).single();
     if(error)return;
     setSession(s);
-    const {data:t}=await supabase.from("tournaments").select("name,entry_fee").eq("id",s.tournament_id).single();
-    setName(t?.name||"Poker Tournament");setEntry(Number(t?.entry_fee||600));
+    const {data:t}=await supabase.from("tournaments").select("name,entry_fee,starting_stack,brand_name,brand_image_url").eq("id",s.tournament_id).single();
+    setName(t?.name||"Poker Tournament");setEntry(Number(t?.entry_fee||600));setStartingStack(Number(t?.starting_stack||10000));setBrandName(t?.brand_name||"");setBrandImage(t?.brand_image_url||null);
     const {data:l}=await supabase.from("tournament_levels").select("*").eq("tournament_id",s.tournament_id).order("position");
     setLevels(l||[]);
     const {data:p}=await supabase.from("payouts").select("place,prize,visible").eq("tournament_id",s.tournament_id).order("place");
@@ -57,10 +60,19 @@ export default function TV(){
   const next=levels[session.current_index+1];
   const payoutText=payouts.filter(p=>p.visible!==false).map(p=>ordinal(p.place)+" "+p.prize).join("   •   ");
   const sponsor=sponsors[0];
+  const avgStack=session.remaining_players>0?Math.round(startingStack*session.total_entries/session.remaining_players):0;
+  const elapsedBase=levels.slice(0,session.current_index).reduce((sum,x)=>sum+(Number(x.minutes)||0)*60,0);
+  const elapsedCurrent=(Number(level.minutes)||0)*60-remaining;
+  const totalElapsed=Math.max(0,elapsedBase+elapsedCurrent);
+  const totalTime=fmt(totalElapsed);
+  let nextBreakSeconds:number|null=null;
+  for(let i=session.current_index;i<levels.length;i++){
+    if(levels[i].kind==="break"){nextBreakSeconds=i===session.current_index?remaining:levels.slice(session.current_index,i).reduce((sum,x)=>sum+(Number(x.minutes)||0)*60,0)-((Number(level.minutes)||0)*60-remaining);break;}
+  }
 
   return <main className="tv-shell">
     <div className="tv-left">
-      <div className="tv-brand-placeholder"><span>Branding</span></div>
+      <div className="tv-brand-placeholder">{brandImage?<img src={brandImage} alt={brandName||"Club branding"}/>:<span>{brandName||"Branding"}</span>}</div>
       <div className="tv-sponsor">{sponsor?.image_url?<img src={sponsor.image_url} alt={sponsor.name}/>:<strong>{sponsor?.name||"Sponsor"}</strong>}</div>
     </div>
     <div className="tv-center">
@@ -76,11 +88,11 @@ export default function TV(){
     </div>
     <div className="tv-right">
       <div><span>LEVEL</span><strong>{level.kind==="break"?"BREAK":level.position}</strong></div>
-      <div><span>TOTAL TIME</span><strong>—</strong></div>
-      <div><span>NEXT BREAK</span><strong>—</strong></div>
+      <div><span>TOTAL TIME</span><strong>{totalTime}</strong></div>
+      <div><span>NEXT BREAK</span><strong>{nextBreakSeconds===null?"—":fmt(Math.max(0,nextBreakSeconds))}</strong></div>
       <div><span>ENTRY</span><strong>€{entry.toLocaleString("de-DE")}</strong></div>
       <div><span>PLAYERS</span><strong>{session.remaining_players} / {session.total_entries}</strong></div>
-      <div><span>AVG STACK</span><strong>—</strong></div>
+      <div><span>AVG STACK</span><strong>{avgStack.toLocaleString("de-DE")}</strong></div>
     </div>
     <div className="tv-powered">powered by Poker and more</div>
   </main>;
