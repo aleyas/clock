@@ -17,6 +17,7 @@ export default function Control(){
   const [levels,setLevels]=useState<Level[]>([]);
   const [name,setName]=useState("");
   const [payouts,setPayouts]=useState<{place:number;prize:string;visible:boolean}[]>([]);
+  const [qr,setQr]=useState("");
   const [now,setNow]=useState(Date.now());
   const params=typeof window!=="undefined"?new URLSearchParams(window.location.search):null;
   const sessionId=params?.get("session");
@@ -32,6 +33,8 @@ export default function Control(){
     setLevels(l||[]);
     const {data:p}=await supabase.from("payouts").select("place,prize,visible").eq("tournament_id",data.tournament_id).order("place");
     setPayouts(p||[]);
+    const tvUrl=window.location.origin+"/tv?code="+data.pairing_code;
+    setQr(await QRCode.toDataURL(tvUrl,{width:240,margin:2}));
   }
 
   useEffect(()=>{load();const timer=setInterval(()=>setNow(Date.now()),250);return()=>clearInterval(timer)},[sessionId]);
@@ -93,7 +96,8 @@ export default function Control(){
         <div className="payout-preview">{payoutText}</div>
       </section>
       <aside className="pair-card">
-        <h2>Connect TV</h2><p className="muted">Open TV mode and enter this code. QR pairing is planned in the next UI pass.</p>
+        <h2>Connect TV</h2><p className="muted">Use either QR code or the 6-digit code.</p>
+        {qr && <img src={qr} alt="TV pairing QR code" className="qr"/>}
         <div className="pair-code">{session.pairing_code}</div>
         <div className="notice">The TV is read-only. Tournament commands come from this organizer device.</div>
       </aside>
