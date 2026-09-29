@@ -82,7 +82,7 @@ export default function Dashboard(){
         <div className="panel-body list">
           {rows.map(t=><div className="tournament-card" key={t.id}>
             <div><h3>{t.name}</h3><p className="muted">{t.total_entries} entries · {Number(t.entry_fee).toLocaleString("de-DE",{style:"currency",currency:"EUR"})} · stack {t.starting_stack.toLocaleString()}</p></div>
-            <button className="button primary small" onClick={()=>start(t.id)}>Start session</button>
+            <div className="header-actions"><Link className="button small" href={"/tournament?id="+t.id}>Edit</Link><button className="button primary small" onClick={()=>start(t.id)}>Start</button></div>
           </div>)}
         </div>
       </div>
