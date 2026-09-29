@@ -6,10 +6,11 @@ const raw: Array<[number,number,number]> = [
   [600,1200,1200],[800,1600,1600],[1000,2000,2000]
 ];
 
+let position = 1;
 export const standardLevels: Level[] = raw.flatMap(([sb,bb,ante], i) => {
-  const level: Level = { position:i+1, kind:"level", minutes:10, sb, bb, ante };
+  const level: Level = { position:position++, kind:"level", minutes:10, sb, bb, ante };
   return i === 5
-    ? [level, { position:i+2, kind:"break", minutes:10, sb:null, bb:null, ante:0 }]
+    ? [level, { position:position++, kind:"break", minutes:10, sb:null, bb:null, ante:0 }]
     : [level];
 });
 
