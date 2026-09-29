@@ -115,3 +115,16 @@ using (owner_id=auth.uid()) with check (owner_id=auth.uid());
 create policy sessions_public_display on public.sessions for select using (status <> 'finished');
 
 alter publication supabase_realtime add table public.sessions;
+
+-- TV display access: only data belonging to a non-finished live session is readable without organizer auth.
+create policy tournaments_display on public.tournaments for select
+using (exists(select 1 from public.sessions s where s.tournament_id=id and s.status <> 'finished'));
+
+create policy levels_display on public.tournament_levels for select
+using (exists(select 1 from public.sessions s where s.tournament_id=tournament_id and s.status <> 'finished'));
+
+create policy payouts_display on public.payouts for select
+using (exists(select 1 from public.sessions s where s.tournament_id=tournament_id and s.status <> 'finished'));
+
+create policy sponsors_display on public.sponsors for select
+using (exists(select 1 from public.sessions s where s.tournament_id=tournament_id and s.status <> 'finished'));
