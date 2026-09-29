@@ -155,7 +155,7 @@ using (owner_id = auth.uid());
 create or replace function public.session_remaining_seconds(p_session public.sessions)
 returns integer
 language plpgsql
-stable
+volatile
 set search_path = public
 as $$
 begin
@@ -365,6 +365,7 @@ begin
 end;
 $$;
 
+revoke all on function public.session_remaining_seconds(public.sessions) from public;
 revoke all on function public.session_command(uuid, text, integer) from public;
 revoke all on function public.tick_session(uuid) from public;
 grant execute on function public.session_command(uuid, text, integer) to authenticated;
